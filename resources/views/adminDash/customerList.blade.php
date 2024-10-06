@@ -1,8 +1,8 @@
 @extends('components.layoutDash')
 
 @section('dash')
-<section class="p-8 bg-gray-100">
-    <div class="">
+<section class="p-4 md:p-8 bg-gray-100">
+    <div class="container mx-auto">
         <h1 class="text-2xl font-bold mb-6 text-gray-800">Customer List</h1>
 
         <div class="overflow-x-auto">
@@ -27,23 +27,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($users as $users)
+                    @foreach($users as $user)
                         <tr>
                             <td class="px-4 py-3 border-b border-gray-200 text-sm">
-                                {{ $users->username }}
+                                {{ $user->username }}
                             </td>
                             <td class="px-4 py-3 border-b border-gray-200 text-sm">
-                                {{ $users->email }}
-                            <td class="px-4 py-3 border-b border-gray-200 text-sm">
-                                {{ $users->location }}
+                                {{ $user->email }}
                             </td>
                             <td class="px-4 py-3 border-b border-gray-200 text-sm">
-                                {{ $users->phone }}
+                                {{ $user->location }}
                             </td>
-
                             <td class="px-4 py-3 border-b border-gray-200 text-sm">
-                                <a href="" class="text-blue-500 hover:underline">Edit</a>
-                                <form action="" method="post" class="inline-block">
+                                {{ $user->phone }}
+                            </td>
+                            <td class="px-4 py-3 border-b border-gray-200 text-sm">
+                                <a href="#" class="text-blue-500 hover:underline">Edit</a>
+                                <form action="#" method="post" class="inline-block">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-500 hover:underline ml-2">Delete</button>

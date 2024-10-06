@@ -12,7 +12,6 @@
     href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css"
     rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   @vite(['resources/css/app.css','resources/js/app.js'])
     <title>iWaterFill:</title>
 </head>
@@ -38,7 +37,6 @@
         transform: scale(1.1);
     }
 
-
     .form-container:hover, .form-container:focus-within {
         transition: all 0.3s ease;
         box-shadow: 0px 0px 15px 5px rgba(0, 0, 0, 0.2);
@@ -48,15 +46,13 @@
 <body>
     <button class="flex flex-row">
         <a href="{{ route('login') }}">
-            <img class="absolute mt-10 ml-[310px]" src="resources\views\images\a.jpg" alt="">
-            <h1 class="absolute text-3xl ml-[300px] mt-5">iWaterFill</h1>
+            <img class="absolute mt-10 ml-[310px] sm:ml-[200px] md:ml-[100px] lg:ml-[310px]" src="resources\views\images\a.jpg" alt="">
+            <h1 class="absolute text-3xl ml-[300px] sm:ml-[200px] md:ml-[100px] lg:ml-[310px] mt-5">iWaterFill</h1>
         </a>
     </button>
 
     <div class="h-screen w-screen bg-[#c9d6ff] bg-gradient-to-r from-[#e2e2e2] to-[#c9d6ff] flex justify-center items-center font-mont">
         @yield('auth')
     </div>
-
-
 </body>
 </html>

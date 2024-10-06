@@ -28,22 +28,23 @@ class AuthController extends Controller
         Auth::login($customer);
     }
 
-    public function login(Request $request){
-        //validate
+    public function login(Request $request) {
+        // Validate
         $fields = $request->validate([
-            'username' => ['required', 'max:50'],
+            'email' => ['required', 'email', 'max:50'], // Palitan ang 'username' ng 'email'
             'password' => ['required']
         ]);
 
-              // Attempt to log in with the provided credentials
-              if (Auth::attempt($fields, $request->filled('remember'))) {
-                // Authentication passed, redirect to the intended page or home
-                return redirect()->intended('dashboard'); // Replace 'dashboard' with your intended route
-            }
-
-            // Authentication failed, redirect back with an error
-            return back()->withErrors([
-                'failed' => 'The provided credentials do not match our records.',
-            ]);
+        // Attempt to log in with the provided credentials
+        if (Auth::attempt($fields, $request->filled('remember'))) {
+            // Authentication passed, redirect to the intended page or home
+            return redirect()->intended('dashboard'); // Palitan ang 'dashboard' sa iyong intended route
         }
+
+        // Authentication failed, redirect back with an error
+        return back()->withErrors([
+            'failed' => 'The provided credentials do not match our records.',
+        ]);
+    }
+
     }

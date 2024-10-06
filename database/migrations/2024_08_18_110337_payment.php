@@ -14,12 +14,14 @@ return new class extends Migration
         //
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->text('customer_Name');
-            $table->text('product_Name');
-            $table->double('price');
-            $table->date('purchase_date');
+            $table->string('customer_Name');
+            $table->string('product_Name');
+            $table->integer('quantity');
+            $table->decimal('price', 8, 2);
+            $table->dateTime('purchase_date');
             $table->timestamps();
         });
+
     }
 
     /**

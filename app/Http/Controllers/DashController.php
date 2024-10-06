@@ -3,75 +3,109 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Payment; // Import your Payment model
 use Illuminate\Http\Request;
+use Carbon\Carbon; // Import Carbon for date handling
 
 class DashController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display the dashboard with sales data.
      */
     public function login()
     {
-        //
-        return view('users.dashboard');
+        return view('adminDash.dashboard');
     }
 
     public function customerList()
-{
-    // Retrieve all users from the database
-    $users = User::all();
+    {
+        // Retrieve all users from the database
+        $users = User::all();
 
-    // Pass the users to the view
-    return view('adminDash.customerList', ['users' => $users]);
-}
-
-
-
-
+        // Pass the users to the view
+        return view('adminDash.customerList', ['users' => $users]);
+    }
 
     /**
-     * Show the form for creating a new resource.
+     * Get sales data for the chart based on the selected period.
+     */
+    public function salesChart(Request $request)
+    {
+        // Set the default period to 'monthly'
+        $period = $request->input('period', 'monthly');
+
+        // Initialize an empty array for sales data
+        $salesData = [];
+
+        // Get sales data based on the selected period
+        switch ($period) {
+            case 'weekly':
+                $salesData = Payment::where('purchase_date', '>=', now()->subWeeks(1))
+                    ->selectRaw('DATE(purchase_date) as date, SUM(price) as total_sales')
+                    ->groupBy('date')
+                    ->orderBy('date')
+                    ->get();
+                break;
+
+            case 'monthly':
+                $salesData = Payment::where('purchase_date', '>=', now()->subMonths(1))
+                    ->selectRaw('DATE(purchase_date) as date, SUM(price) as total_sales')
+                    ->groupBy('date')
+                    ->orderBy('date')
+                    ->get();
+                break;
+
+            case 'yearly':
+                $salesData = Payment::where('purchase_date', '>=', now()->subYears(1))
+                    ->selectRaw('DATE(purchase_date) as date, SUM(price) as total_sales')
+                    ->groupBy('date')
+                    ->orderBy('date')
+                    ->get();
+                break;
+
+            default:
+                // Default case can return monthly or whatever is appropriate
+                break;
+        }
+
+        // Get total sales today
+        $totalSalesToday = Payment::whereDate('purchase_date', Carbon::today())->sum('price');
+
+        // Get total sales
+        $totalSales = Payment::sum('price');
+
+        // Pass the sales data and totals to the view
+        return view('adminDash.dashboard', compact('salesData', 'period', 'totalSalesToday', 'totalSales'));
+    }
+
+    /**
+     * Show other methods if necessary.
      */
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         //

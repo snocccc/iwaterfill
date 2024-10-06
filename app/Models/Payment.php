@@ -11,7 +11,12 @@ class Payment extends Model
     protected $fillable = [
         'customer_Name',
         'product_Name',
+        'quantity',
         'price',
         'purchase_date',
+    ];
+    // Cast `purchase_date` to Carbon instance
+    protected $casts = [
+        'purchase_date' => 'datetime',
     ];
 }
