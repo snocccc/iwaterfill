@@ -10,7 +10,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet"/>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -19,13 +18,13 @@
 </head>
 <body class="bg-gray-100 font-mont">
 
-    <div x-data="{ open: false }" class="flex flex-col lg:flex-row lg:min-h-screen">
+    <div class="flex flex-col lg:flex-row lg:min-h-screen">
 
         <!-- Sidebar -->
-        <div :class="{'block': open, 'hidden': !open}" class="fixed inset-0 z-40 bg-gray-800 bg-opacity-75 lg:hidden" @click="open = false"></div>
-        <div :class="{'translate-x-0': open, '-translate-x-full': !open}" class="fixed inset-y-0 left-0 w-48 bg-gray-900 transform transition-transform lg:relative lg:translate-x-0 lg:w-48 lg:flex lg:flex-col lg:shadow-md lg:overflow-y-auto z-50">
+        <div class="fixed inset-0 z-40 bg-gray-800 bg-opacity-75 lg:hidden"></div>
+        <div class="fixed inset-y-0 left-0 w-48 bg-gray-900 lg:relative lg:w-48 lg:flex lg:flex-col lg:shadow-md lg:overflow-y-auto z-50">
             <div class="flex items-center justify-between p-4 bg-gray-900 lg:hidden">
-                <button @click="open = !open" class="text-white text-2xl">
+                <button class="text-white text-2xl">
                     <i class="ri-menu-line"></i>
                 </button>
             </div>
@@ -67,7 +66,9 @@
                     </li>
                     <li>
                         <a href="{{ route('container') }}" class="flex items-center p-2 text-gray-200 text-base hover:bg-gray-700 hover:text-gray-100 rounded-lg {{ request()->routeIs('availableContainer') ? 'bg-gray-600 text-white' : '' }}">
-                            <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 512 512"><path fill="currentColor" d="M225 25v30h62V25zm8 48v28.6l-5 2.5c-17 8.5-40.6 16.3-59.4 27.6c-9.6 5.8-17.6 12-23.2 19.3h221.2c-5.6-7.3-13.6-13.5-23.2-19.3c-18.8-11.3-42.4-19.1-59.4-27.6l-5-2.5V73zm-112 96v16h270v-16zm16 34v28h238v-28zm-16 46v30h270v-30zm16 48v94h238v-94zm0 112v39c0 1 1.1 4.9 4 9.3c2.9 4.3 7.4 9.3 12.8 13.8c10.8 9 25.2 15.9 38.2 15.9h128c13 0 27.4-6.9 38.2-15.9c5.4-4.5 9.9-9.5 12.8-13.8c2.9-4.4 4-8.3 4-9.3v-39z"/></svg>
+                            <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 512 512">
+                                <path fill="currentColor" d="M225 25v30h62V25zm8 48v28.6l-5 2.5c-17 8.5-40.6 16.3-59.4 27.6c-9.6 5.8-17.6 12-23.2 19.3h221.2c-5.6-7.3-13.6-13.5-23.2-19.3c-18.8-11.3-42.4-19.1-59.4-27.6l-5-2.5V73zm-112 96v16h270v-16zm16 34v28h238v-28zm-16 46v30h270v-30zm16 48v94h238v-94zm0 112v39c0 1 1.1 4.9 4 9.3c2.9 4.3 7.4 9.3 12.8 13.8c10.8 9 25.2 15.9 38.2 15.9h128c13 0 27.4-6.9 38.2-15.9c5.4-4.5 9.9-9.5 12.8-13.8c2.9-4.4 4-8.3 4-9.3v-39z"/>
+                            </svg>
                             <span>Available Container</span>
                         </a>
                     </li>
@@ -78,26 +79,36 @@
                         </a>
                     </li>
                 </ul>
+                <!-- Logout Button -->
+                <li>
+                    <form action="{{ route('logout') }}" method="POST" class="flex items-center p-2 text-gray-200 text-base hover:bg-gray-700 hover:text-gray-100 rounded-lg">
+                        @csrf
+                        <button type="submit" class="flex items-center w-full">
+                            <i class="bi bi-box-arrow-left mr-2"></i>
+                            <span>Logout</span>
+                        </button>
+                    </form>
+                </li>
             </div>
         </div>
 
         <!-- Main Content -->
         <main class="flex-1 bg-blue-200 bg-gradient-to-r from-[#e2e2e2] to-[#c9d6ff] min-h-screen lg:ml-0 lg:pl-0 lg:py-0">
             <div class="flex items-center justify-between p-4 bg-blue-200 lg:hidden">
-                <button class="text-3xl text-gray-700" @click="open = !open">
+                <button class="text-3xl text-gray-700">
                     <i class="ri-menu-line"></i>
                 </button>
                 <div class="relative grid place-items-center">
-                    <button type="button" class="rounded-full overflow-hidden" @click="open = !open">
+                    <button type="button" class="rounded-full overflow-hidden">
                         <img src="https://picsum.photos/id/35/35" alt="">
                     </button>
-                    <div class="bg-white shadow-lg absolute rounded-lg overflow-hidden mt-12 right-0" x-show="open" @click.outside="open = false">
-                        <p class="font-light pl-4 w-full">{{ auth()->user()->username }}</p>
+                    <div class="bg-white shadow-lg absolute rounded-lg overflow-hidden mt-12 right-0">
+                        <p class="font-light pl-4 w-full">{{ auth()->user()->email }}</p>
                         <hr class="border-gray-300">
-                        <a class="block hover:bg-slate-100 pr-4 mb-1 pl-4" @click="open = false">Dashboard</a>
+                        <a href="{{ route('dashboard') }}" class="block hover:bg-slate-100 pr-4 mb-1 pl-4">Dashboard</a>
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
-                            <button class="block hover:bg-slate-100 pr-4 mb-1 pl-4 w-full" @click="open = false">Logout</button>
+                            <button class="block hover:bg-slate-100 pr-4 mb-1 pl-4 w-full">Logout</button>
                         </form>
                     </div>
                 </div>

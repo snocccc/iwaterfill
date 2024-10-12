@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Payment; // Import your Payment model
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon; // Import Carbon for date handling
 
 class DashController extends Controller
@@ -68,14 +69,23 @@ class DashController extends Controller
                 break;
         }
 
-        // Get total sales today
-        $totalSalesToday = Payment::whereDate('purchase_date', Carbon::today())->sum('price');
+         // Total sales for today
+         $totalSalesToday = Payment::whereDate('purchase_date', Carbon::today())->sum('price');
 
-        // Get total sales
-        $totalSales = Payment::sum('price');
+         // Total sales overall
+         $totalSales = Payment::sum('price');
 
-        // Pass the sales data and totals to the view
-        return view('adminDash.dashboard', compact('salesData', 'period', 'totalSalesToday', 'totalSales'));
+         // Sales data for charting
+         $salesData = Payment::select(DB::raw('DATE(purchase_date) as date, SUM(price) as total_sales'))
+             ->groupBy('date')
+             ->orderBy('date', 'asc')
+             ->get();
+
+         // Get the selected period (default to 'weekly')
+         $period = $request->input('period', 'weekly');
+
+         // Return the view with the required data
+         return view('adminDash.dashboard', compact('totalSalesToday', 'totalSales', 'salesData', 'period'));
     }
 
     /**

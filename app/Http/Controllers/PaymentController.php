@@ -6,7 +6,7 @@ use App\Models\Payment;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Auth;
 class PaymentController extends Controller
 {
     /**
@@ -52,7 +52,7 @@ class PaymentController extends Controller
     }
 
     public function index(Request $request)
-{
+   {
     // Kunin ang napiling petsa mula sa request
     $date = $request->input('date');
 
@@ -63,7 +63,24 @@ class PaymentController extends Controller
 
     // Ibalik ang view kasama ang na-filter na records
     return view('adminDash.history', compact('payments'));
-}
+   }
+
+    // Function to handle post-login redirection
+    public function userPayment()
+    {
+
+         // Kunin ang lahat ng produkto mula sa database
+       $products = Product::all();
+
+       return view('userDash.userDashboard', compact('products'));
+    }
+
+    // Override the authenticated method
+
+
+//
+
+
 
 
 

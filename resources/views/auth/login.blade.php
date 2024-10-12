@@ -15,7 +15,7 @@
             <p class="text-sm ml-4 mt-1">If You Already A Member, Please Login</p>
             <form action="{{ route('login') }}" method="POST" class="flex flex-col gap-4 px-4 py-2">
                 @csrf
-                <input value="{{ old('username') }}" class="p-2 rounded-lg border" type="text" name="username" placeholder="Username">
+                <input value="{{ old('email') }}" class="p-2 rounded-lg border" type="email" name="email" placeholder="Email">
                 <div class="relative">
                     <input class="p-2 rounded-lg border w-full" type="password" name="password" placeholder="Password">
                     <i class="bi bi-eye absolute bottom-2 right-2 fill-red-400"></i>

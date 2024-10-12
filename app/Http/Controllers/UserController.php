@@ -22,42 +22,64 @@ class UserController extends Controller
         //Register the user
         $user = User::create($fields);
 
-        Auth::login($user);
+        if (Auth::attempt($fields, $request->filled('remember'))) {
+            // Authentication passed
+
+            if (Auth::user()->role === 'admin') {
+                return redirect()->route('dashboard'); // Gamit ang return para sa tamang pag-redirect
+            } else {
+                return redirect()->route('userPayment'); // Gamit ang return para sa tamang pag-redirect
+            }
+
+
+
+        } // papaayos mo ito sa chat gpt
 
         //redirect
-        return redirect()->route('afterRegister');
+        return redirect()->route('login');
 
     }
 
-    public function login(Request $request){
-        //validate
-        $fields = $request->validate([
-            'username' => ['required', 'max:50'],
-            'password' => ['required']
-        ]);
+    public function login(Request $request)
+    {
+         // Validate input
+    $fields = $request->validate([
+        'email' => ['required', 'email', 'max:50'],
+        'password' => ['required']
+    ]);
 
-              // Attempt to log in with the provided credentials
-              if (Auth::attempt($fields, $request->filled('remember'))) {
-                // Authentication passed, redirect to the intended page or home
-                return redirect()->intended('dashboard'); // Replace 'dashboard' with your intended route
-            }else{
-            // Authentication failed, redirect back with an error
-            return back()->withErrors([
-                'failed' => 'The provided credentials do not match our records.',
-            ]);
-            }
+    // Attempt to log in with the provided credentials
+    if (Auth::attempt($fields, $request->filled('remember'))) {
+        // Authentication passed
+
+        if (Auth::user()->role === 'admin') {
+            return redirect()->route('dashboard'); // Gamit ang return para sa tamang pag-redirect
+        } else {
+            return redirect()->route('userPayment'); // Gamit ang return para sa tamang pag-redirect
+        }
+
+
+
+    }
+
+    // Authentication failed, redirect back with an error
+    return back()->withErrors([
+        'failed' => 'The provided credentials do not match our records.',
+    ]);
         }
 
         public function logout(Request $request) {
+            // Log the user out
             Auth::logout();
 
+            // Invalidate the session
             $request->session()->invalidate();
 
+            // Regenerate the CSRF token
             $request->session()->regenerateToken();
 
-            return redirect('/login');
-
-
+            // Redirect to login page
+            return redirect('/');
         }
 
 

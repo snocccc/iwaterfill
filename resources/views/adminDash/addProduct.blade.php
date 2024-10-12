@@ -2,7 +2,7 @@
 
 @section('dash')
 <section>
-    <div class="max-w-lg mx-auto bg-[#caf0f8] p-6 rounded-lg shadow-lg mt-[50px]">
+    <div class="max-w-lg mx-auto bg-[#caf0f8] p-6 rounded-lg shadow-lg mt-[100px]">
         <h1 class="text-2xl font-bold mb-6 text-[#03045e]">Add Product</h1>
 
         @if(session('success'))
