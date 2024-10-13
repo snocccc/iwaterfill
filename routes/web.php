@@ -4,6 +4,7 @@ use App\Http\Controllers\DashController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Guest Routes (for users who are not authenticated)
@@ -25,10 +26,18 @@ Route::middleware('guest')->group(function() {
 Route::middleware('auth')->group(function() {
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
+
+
     Route::middleware(['role:user'])->group(function () {
 
+        // Route para sa customer profile
+    Route::get('/customer/profile', [ProfileController::class, 'index'])->name('profile');
 
     Route::get('/userPayment', [PaymentController::class, 'userPayment'])->name('userPayment');
+    Route::post('/buying', [PaymentController::class, 'userBuy'])->name('userBuy');
+
+    // Payment History and Editing
+    Route::get('/userhistory', [PaymentController::class, 'userhistory'])->name('userHistory');
      // Logout
 
 
@@ -38,7 +47,7 @@ Route::middleware('auth')->group(function() {
     // Admin Routes (only for users with 'admin' role)
     Route::middleware(['role:admin'])->group(function () {
 
-       Route::get('/admin/dashboard', [DashController::class, 'salesChart'])->name('dashboard');
+        Route::get('/admin/dashboard', [DashController::class, 'salesChart'])->name('dashboard');
         // Payments and Purchase
        Route::get('/AddPurchase', [PaymentController::class, 'purchase'])->name('purchase');
        Route::post('/AddPurchase', [PaymentController::class, 'buy'])->name('buy');
@@ -50,7 +59,7 @@ Route::middleware('auth')->group(function() {
        // Update Products
        Route::post('/update-products', [ProductController::class, 'updateProducts'])->name('updateProducts');
        // Payment History and Editing
-       Route::get('/history', [PaymentController::class, 'index'])->name('history');
+       Route::get('/history', [PaymentController::class, 'adminHistory'])->name('history');
        Route::get('/payments/{id}/edit', [PaymentController::class, 'edit'])->name('payments.edit');
        Route::put('/payments/{id}', [PaymentController::class, 'update'])->name('payments.update');
        Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');

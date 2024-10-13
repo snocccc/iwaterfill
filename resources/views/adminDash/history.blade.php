@@ -1,17 +1,16 @@
 @extends('components.layoutDash')
 
 @section('dash')
-<div class="bg-gray-100 flex justify-center items-center min-h-screen py-4 px-2">
-
-    <div class="w-full max-w-6xl bg-white shadow-md rounded-lg p-4 md:p-8">
-        <h2 class="text-2xl font-semibold text-center mb-6">Purchase History</h2>
+<div class="bg-[#caf0f8] min-h-screen py-8">
+    <div class="container mx-auto px-4">
+        <h1 class="text-4xl font-bold text-[#03045e] mb-6">Purchase History</h1>
 
         <!-- Date Filter -->
         <div class="mb-4 flex flex-col md:flex-row justify-center items-center">
-            <label for="filter_date" class="mr-2 text-gray-700 font-medium mb-2 md:mb-0">Filter by Date:</label>
+            <label for="filter_date" class="mr-2 text-[#03045e] font-medium mb-2 md:mb-0">Filter by Date:</label>
             <form action="{{ route('history') }}" method="GET" class="flex items-center">
-                <input type="date" id="filter_date" name="date" class="p-2 border border-gray-300 rounded-lg" value="{{ request('date') }}">
-                <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Filter</button>
+                <input type="date" id="filter_date" name="date" class="p-2 border-2 border-[#90e0ef] rounded-lg bg-[#f0f9ff]" value="{{ request('date') }}">
+                <button type="submit" class="ml-2 bg-[#00b4d8] text-white px-4 py-2 rounded-lg hover:bg-[#0077b6] transition duration-300">Filter</button>
             </form>
             <form action="{{ route('history') }}" method="GET" class="ml-4">
                 <button type="submit" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Show All</button>
@@ -20,26 +19,26 @@
 
         <!-- Purchase Table -->
         <div class="overflow-x-auto">
-            <table id="purchaseTable" class="w-full border-collapse border border-gray-200">
+            <table class="w-full border-collapse border border-gray-200">
                 <thead>
-                    <tr>
-                        <th class="border border-gray-300 p-3">Customer Name</th>
-                        <th class="border border-gray-300 p-3">Product Name</th>
-                        <th class="border border-gray-300 p-3">Price</th>
-                        <th class="border border-gray-300 p-3">Purchase Date</th>
-                        <th class="border border-gray-300 p-3">Actions</th> <!-- Column for Actions -->
+                    <tr class="bg-[#0077b6] text-white">
+                        <th class="border border-[#90e0ef] p-3">Customer Name</th>
+                        <th class="border border-[#90e0ef] p-3">Product Name</th>
+                        <th class="border border-[#90e0ef] p-3">Price</th>
+                        <th class="border border-[#90e0ef] p-3">Purchase Date</th>
+                        <th class="border border-[#90e0ef] p-3">Actions</th> <!-- Column for Actions -->
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($payments as $payment)
-                        <tr>
-                            <td class="border border-gray-300 p-3">{{ $payment->customer_Name }}</td>
-                            <td class="border border-gray-300 p-3">{{ $payment->product_Name }}</td>
-                            <td class="border border-gray-300 p-3">${{ $payment->price }}</td>
-                            <td class="border border-gray-300 p-3">{{ $payment->purchase_date->format('Y-m-d H:i') }}</td>
-                            <td class="border border-gray-300 p-3">
+                        <tr class="border-b border-[#90e0ef] hover:bg-[#e6f8fc] transition duration-300">
+                            <td class="border border-[#90e0ef] p-3">{{ $payment->username }}</td>
+                            <td class="border border-[#90e0ef] p-3">{{ $payment->product_Name }}</td>
+                            <td class="border border-[#90e0ef] p-3 font-medium text-[#03045e]">₱{{ number_format($payment->price, 2) }}</td>
+                            <td class="border border-[#90e0ef] p-3">{{ \Carbon\Carbon::parse($payment->purchase_date)->format('F d, Y') }}</td>
+                            <td class="border border-[#90e0ef] p-3">
                                 <!-- Edit Button -->
-                                <a href="{{ route('payments.edit', $payment->id) }}" class="text-blue-500 hover:underline">Edit</a>
+                                <a href="{{ route('payments.edit', $payment->id) }}" class="text-[#0077b6] hover:underline">Edit</a>
 
                                 <!-- Delete Button -->
                                 <form action="{{ route('payments.destroy', $payment->id) }}" method="POST" class="inline">
@@ -53,7 +52,6 @@
                 </tbody>
             </table>
         </div>
-
     </div>
 
     <!-- Add DataTables script -->
@@ -69,7 +67,7 @@
 
                 table.rows().every(function() {
                     var row = $(this.node());
-                    var rowDate = row.find('td:last-child').text().split(' ')[0]; // Extract date from the purchase date column
+                    var rowDate = row.find('td:nth-child(4)').text().split(' ')[0]; // Extract date from the purchase date column
 
                     if (selectedDate === '' || rowDate === selectedDate) {
                         row.show();

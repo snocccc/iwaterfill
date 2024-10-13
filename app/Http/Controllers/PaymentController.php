@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Payment;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+
 class PaymentController extends Controller
 {
     /**
@@ -25,7 +26,7 @@ class PaymentController extends Controller
     {
        // Validate the incoming request data
     $validated = $request->validate([
-        'customer_name' => 'required|string|max:255',
+        'username' => 'required|string|max:255',
         'product_id' => 'required|exists:products,id',
         'quantity' => 'required|integer|min:1',
         'price' => 'required|numeric',
@@ -40,7 +41,7 @@ class PaymentController extends Controller
 
     // Create a new Payment record
     Payment::create([
-        'customer_Name' => $validated['customer_name'],
+        'username' => $validated['username'],
         'product_Name' => $product->product_Name,
         'quantity' => $validated['quantity'],
         'price' => $validated['price'],
@@ -51,7 +52,7 @@ class PaymentController extends Controller
     return redirect()->route('purchase')->with('success', 'Purchase completed successfully.');
     }
 
-    public function index(Request $request)
+    public function adminHistory(Request $request)
    {
     // Kunin ang napiling petsa mula sa request
     $date = $request->input('date');
@@ -65,20 +66,66 @@ class PaymentController extends Controller
     return view('adminDash.history', compact('payments'));
    }
 
-    // Function to handle post-login redirection
-    public function userPayment()
-    {
+   // Override the authenticated method
 
-         // Kunin ang lahat ng produkto mula sa database
-       $products = Product::all();
+   public function userhistory()
+   {
+       // Kunin ang authenticated na user at pangalan niya
+        $username = Auth::user()->username;
 
-       return view('userDash.userDashboard', compact('products'));
+        // Hanapin ang lahat ng transactions na may parehong customer name
+        $payments = Payment::where('username', $username)->get();
+
+        // Ibalik ang view kasama ang transactions
+        return view('userDash.userHistory', compact('payments'));
     }
 
-    // Override the authenticated method
+    public function userPayment()
+    {
+        // Kunin ang lahat ng products mula sa database
+        $products = Product::all();
+
+        // Ibalik ang view para sa payment form kasama ang products
+        return view('userDash.userPurchase', compact('products'));
+    }
+
+    public function userBuy(Request $request)
+{
+    // Validate the incoming request data for users
+    $validated = $request->validate([
+        'product_id' => 'required|exists:products,id',
+        'quantity' => 'required|integer|min:1',
+        'purchase_date' => 'required|string', // Validate as string instead of date
+    ]);
+
+    // Parse the purchase_date using Carbon
+    $purchaseDate = Carbon::createFromFormat('F j, Y H:i', $validated['purchase_date']);
+
+    // Retrieve the product based on the selected product_id
+    $product = Product::findOrFail($validated['product_id']);
+
+    // Get the authenticated user's username
+    $username = Auth::user()->username; // Palitan ito kung ang 'name' ay nananatili
+
+    // Create a new Payment record for user purchases
+    Payment::create([
+        'username' => $username, // Gumamit ng 'username' dito
+        'product_Name' => $product->product_Name,
+        'quantity' => $validated['quantity'], // Add quantity here
+        'price' => $product->price * $validated['quantity'], // Calculate total price
+        'purchase_date' => $purchaseDate, // Use the formatted date
+    ]);
+
+    // Redirect back with a success message
+    return redirect()->route('userPayment')->with('success', 'Purchase completed successfully.');
+}
 
 
-//
+
+
+
+
+    //
 
 
 

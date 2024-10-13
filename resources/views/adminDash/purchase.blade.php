@@ -1,30 +1,34 @@
 @extends('components.layoutDash')
 
 @section('dash')
-<div class="bg-gray-100 flex justify-center items-center min-h-screen py-4 px-2">
+<div class="bg-[#caf0f8] flex justify-center items-center min-h-screen py-12 px-4">
 
-    <div class="w-full max-w-md bg-white shadow-md rounded-lg p-6 md:p-8">
-        <h2 class="text-2xl font-semibold text-center mb-6">Purchase Product</h2>
+    <div class="w-full max-w-lg bg-white shadow-xl rounded-lg overflow-hidden p-8">
+        <div class="bg-gradient-to-r from-[#03045e] to-[#0077b6] text-white py-6 px-8">
+            <h2 class="text-3xl font-bold text-center">Purchase Product</h2>
+        </div>
 
         @if (session('success'))
-        <div class="mb-4 p-3 text-green-600 bg-green-200 rounded">
+        <div class="mb-6 p-4 text-[#03045e] bg-[#90e0ef] rounded-lg shadow-md">
             {{ session('success') }}
         </div>
-    @endif
+        @endif
 
-        <form action="{{ route('buy') }}" method="post">
+        <form action="{{ route('buy') }}" method="post" class="space-y-6">
             @csrf
 
             <!-- Customer Name -->
-            <div class="mb-4">
-                <label for="customer_name" class="block text-gray-700 font-medium mb-2">Customer Name</label>
-                <input type="text" name="customer_name" id="customer_name" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required>
+            <div>
+                <label for="username" class="block text-[#03045e] font-semibold mb-2">Customer Name</label>
+                <input type="text" name="username" id="username"
+                       class="w-full p-3 border-2 border-[#90e0ef] rounded-lg bg-[#f0f9ff] focus:outline-none focus:border-[#00b4d8] transition duration-300"
+                       required>
             </div>
 
             <!-- Product -->
-            <div class="mb-4">
-                <label for="product_id" class="block text-gray-700 font-medium mb-2">Select Product</label>
-                <select name="product_id" id="product_id" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required>
+            <div>
+                <label for="product_id" class="block text-[#03045e] font-semibold mb-2">Select Product</label>
+                <select name="product_id" id="product_id" class="w-full p-3 border-2 border-[#90e0ef] rounded-lg focus:outline-none focus:border-[#00b4d8] transition duration-300" required>
                     <option value="" data-price="">Select a product</option>
                     @foreach($products as $product)
                         <option value="{{ $product->id }}" data-price="{{ $product->price }}">{{ $product->product_Name }} - ${{ $product->price }}</option>
@@ -32,31 +36,30 @@
                 </select>
             </div>
 
-           <!-- Quantity -->
-
-           <div class="mb-4">
-            <label for="quantity" class="block text-gray-700 font-medium mb-2">Quantity</label>
-            <input type="number" name="quantity" id="quantity" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required min="1">
-           </div>
-
+            <!-- Quantity -->
+            <div>
+                <label for="quantity" class="block text-[#03045e] font-semibold mb-2">Quantity</label>
+                <input type="number" name="quantity" id="quantity" class="w-full p-3 border-2 border-[#90e0ef] rounded-lg focus:outline-none focus:border-[#00b4d8] transition duration-300" required min="1">
+            </div>
 
             <!-- Price -->
-            <div class="mb-4">
-                <label for="price" class="block text-gray-700 font-medium mb-2">Price</label>
-                <input type="number" name="price" id="price" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" readonly required>
+            <div>
+                <label for="price" class="block text-[#03045e] font-semibold mb-2">Total Price</label>
+                <input type="number" name="price" id="price" class="w-full p-3 border-2 border-[#90e0ef] rounded-lg bg-[#f0f9ff] focus:outline-none focus:border-[#00b4d8] transition duration-300" readonly required>
             </div>
 
             <!-- Date and Time -->
-            <div class="mb-4">
-                <label for="purchase_date" class="block text-gray-700 font-medium mb-2">Date and Time</label>
-                <input type="text" name="purchase_date" id="purchase_date" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 flatpickr" required>
+            <div>
+                <label for="purchase_date" class="block text-[#03045e] font-semibold mb-2">Purchase Date and Time</label>
+                <input type="text" name="purchase_date" id="purchase_date" class="w-full p-3 border-2 border-[#90e0ef] rounded-lg focus:outline-none focus:border-[#00b4d8] transition duration-300 flatpickr" required>
             </div>
 
             <!-- Submit Button -->
             <div>
-                <button type="submit" class="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition duration-300">Submit Purchase</button>
+                <button type="submit" class="w-full bg-[#00b4d8] text-white p-4 rounded-lg hover:bg-[#0077b6] transition duration-300 font-semibold text-lg shadow-md">
+                    Complete Purchase
+                </button>
             </div>
-
         </form>
     </div>
 </div>
@@ -73,7 +76,7 @@
 
         if (pricePerUnit && quantity) {
             var totalPrice = pricePerUnit * quantity;
-            document.getElementById('price').value = totalPrice.toFixed(2); // Converts to two decimal places
+            document.getElementById('price').value = totalPrice.toFixed(2);
         }
     }
 
@@ -84,7 +87,8 @@
     // Initialize Flatpickr
     flatpickr("#purchase_date", {
         enableTime: true,
-        dateFormat: "F j, Y H:i", // Format na gusto mong ipakita (e.g., "October 5, 2024 12:00")
+        dateFormat: "F j, Y H:i",
+        theme: "airbnb"
     });
 </script>
 @endsection

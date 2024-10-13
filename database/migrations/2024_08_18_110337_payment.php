@@ -14,7 +14,7 @@ return new class extends Migration
         //
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->string('customer_Name');
+            $table->string('username');
             $table->string('product_Name');
             $table->integer('quantity');
             $table->decimal('price', 8, 2);

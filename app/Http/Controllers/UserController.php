@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -22,18 +23,7 @@ class UserController extends Controller
         //Register the user
         $user = User::create($fields);
 
-        if (Auth::attempt($fields, $request->filled('remember'))) {
-            // Authentication passed
-
-            if (Auth::user()->role === 'admin') {
-                return redirect()->route('dashboard'); // Gamit ang return para sa tamang pag-redirect
-            } else {
-                return redirect()->route('userPayment'); // Gamit ang return para sa tamang pag-redirect
-            }
-
-
-
-        } // papaayos mo ito sa chat gpt
+      // papaayos mo ito sa chat gpt
 
         //redirect
         return redirect()->route('login');
@@ -41,8 +31,8 @@ class UserController extends Controller
     }
 
     public function login(Request $request)
-    {
-         // Validate input
+{
+    // Validate input
     $fields = $request->validate([
         'email' => ['required', 'email', 'max:50'],
         'password' => ['required']
@@ -51,22 +41,18 @@ class UserController extends Controller
     // Attempt to log in with the provided credentials
     if (Auth::attempt($fields, $request->filled('remember'))) {
         // Authentication passed
-
         if (Auth::user()->role === 'admin') {
-            return redirect()->route('dashboard'); // Gamit ang return para sa tamang pag-redirect
+            return redirect()->route('dashboard');
         } else {
-            return redirect()->route('userPayment'); // Gamit ang return para sa tamang pag-redirect
+            return redirect()->route('profile');
         }
-
-
-
+    } else {
+        // Log the failed attempt
+        Log::warning('Login attempt failed for: ' . $fields['email']);
+        return back()->withErrors(['email' => 'Invalid credentials']);
     }
+}
 
-    // Authentication failed, redirect back with an error
-    return back()->withErrors([
-        'failed' => 'The provided credentials do not match our records.',
-    ]);
-        }
 
         public function logout(Request $request) {
             // Log the user out
