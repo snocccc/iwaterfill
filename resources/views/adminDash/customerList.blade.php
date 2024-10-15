@@ -43,7 +43,7 @@
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 <a href="#" class="text-[#0077b6] hover:underline">Edit</a>
-                                <form action="#" method="post" class="inline-block">
+                                {{-- <form action="{{ route('payments.destroy') }}" method="post" class="inline-block"> --}}
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-500 hover:underline ml-2">Delete</button>

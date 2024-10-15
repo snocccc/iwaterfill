@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Payment;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class PaymentController extends Controller
@@ -68,57 +67,57 @@ class PaymentController extends Controller
 
    // Override the authenticated method
 
-   public function userhistory()
-   {
-       // Kunin ang authenticated na user at pangalan niya
-        $username = Auth::user()->username;
+//    public function userhistory()
+//    {
+//        // Kunin ang authenticated na user at pangalan niya
+//         $username = Auth::user()->username;
 
-        // Hanapin ang lahat ng transactions na may parehong customer name
-        $payments = Payment::where('username', $username)->get();
+//         // Hanapin ang lahat ng transactions na may parehong customer name
+//         $payments = Payment::where('username', $username)->get();
 
-        // Ibalik ang view kasama ang transactions
-        return view('userDash.userHistory', compact('payments'));
-    }
+//         // Ibalik ang view kasama ang transactions
+//         return view('userDash.userHistory', compact('payments'));
+//     }
 
-    public function userPayment()
-    {
-        // Kunin ang lahat ng products mula sa database
-        $products = Product::all();
+//     public function userPayment()
+//     {
+//         // Kunin ang lahat ng products mula sa database
+//         $products = Product::all();
 
-        // Ibalik ang view para sa payment form kasama ang products
-        return view('userDash.userPurchase', compact('products'));
-    }
+//         // Ibalik ang view para sa payment form kasama ang products
+//         return view('userDash.userPurchase', compact('products'));
+//     }
 
-    public function userBuy(Request $request)
-{
-    // Validate the incoming request data for users
-    $validated = $request->validate([
-        'product_id' => 'required|exists:products,id',
-        'quantity' => 'required|integer|min:1',
-        'purchase_date' => 'required|string', // Validate as string instead of date
-    ]);
+//     public function userBuy(Request $request)
+// {
+//     // Validate the incoming request data for users
+//     $validated = $request->validate([
+//         'product_id' => 'required|exists:products,id',
+//         'quantity' => 'required|integer|min:1',
+//         'purchase_date' => 'required|string', // Validate as string instead of date
+//     ]);
 
-    // Parse the purchase_date using Carbon
-    $purchaseDate = Carbon::createFromFormat('F j, Y H:i', $validated['purchase_date']);
+//     // Parse the purchase_date using Carbon
+//     $purchaseDate = Carbon::createFromFormat('F j, Y H:i', $validated['purchase_date']);
 
-    // Retrieve the product based on the selected product_id
-    $product = Product::findOrFail($validated['product_id']);
+//     // Retrieve the product based on the selected product_id
+//     $product = Product::findOrFail($validated['product_id']);
 
-    // Get the authenticated user's username
-    $username = Auth::user()->username; // Palitan ito kung ang 'name' ay nananatili
+//     // Get the authenticated user's username
+//     $username = Auth::user()->username; // Palitan ito kung ang 'name' ay nananatili
 
-    // Create a new Payment record for user purchases
-    Payment::create([
-        'username' => $username, // Gumamit ng 'username' dito
-        'product_Name' => $product->product_Name,
-        'quantity' => $validated['quantity'], // Add quantity here
-        'price' => $product->price * $validated['quantity'], // Calculate total price
-        'purchase_date' => $purchaseDate, // Use the formatted date
-    ]);
+//     // Create a new Payment record for user purchases
+//     Payment::create([
+//         'username' => $username, // Gumamit ng 'username' dito
+//         'product_Name' => $product->product_Name,
+//         'quantity' => $validated['quantity'], // Add quantity here
+//         'price' => $product->price * $validated['quantity'], // Calculate total price
+//         'purchase_date' => $purchaseDate, // Use the formatted date
+//     ]);
 
-    // Redirect back with a success message
-    return redirect()->route('userPayment')->with('success', 'Purchase completed successfully.');
-}
+//     // Redirect back with a success message
+//     return redirect()->route('userPayment')->with('success', 'Purchase completed successfully.');
+// }
 
 
 
@@ -174,7 +173,7 @@ class PaymentController extends Controller
     public function destroy(string $id)
     {
         $payment = Payment::findOrFail($id);
-    $payment->delete();
+        $payment->delete();
 
     return redirect()->route('history')->with('success', 'Payment deleted successfully.');
 

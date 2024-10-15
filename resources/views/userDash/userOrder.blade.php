@@ -4,7 +4,7 @@
 <div class="bg-[#caf0f8] flex justify-center items-center min-h-screen py-12 px-4">
     <div class="w-full max-w-lg bg-white shadow-xl rounded-lg overflow-hidden">
         <div class="bg-gradient-to-r from-[#03045e] to-[#0077b6] text-white py-6 px-8">
-            <h2 class="text-3xl font-bold text-center">Purchase Product</h2>
+            <h2 class="text-3xl font-bold text-center">Make Order</h2>
         </div>
 
         <div class="p-8">
@@ -50,14 +50,14 @@
 
                 <!-- Date and Time -->
                 <div>
-                    <label for="purchase_date" class="block text-[#03045e] font-semibold mb-2">Purchase Date and Time</label>
+                    <label for="purchase_date" class="block text-[#03045e] font-semibold mb-2">Order Date and Time</label>
                     <input type="text" name="purchase_date" id="purchase_date" class="w-full p-3 border-2 border-[#90e0ef] rounded-lg focus:outline-none focus:border-[#00b4d8] transition duration-300 flatpickr" required>
                 </div>
 
                 <!-- Submit Button -->
                 <div>
                     <button type="submit" class="w-full bg-[#00b4d8] text-white p-4 rounded-lg hover:bg-[#0077b6] transition duration-300 font-semibold text-lg shadow-md">
-                        Complete Purchase
+                        Place Order
                     </button>
                 </div>
             </form>

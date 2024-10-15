@@ -32,10 +32,7 @@
         transform: translateY(-10px);
     }
 
-    .rounded-2xl:hover img {
-        transition: all 0.3s ease;
-        transform: scale(1.1);
-    }
+
 
     .form-container:hover, .form-container:focus-within {
         transition: all 0.3s ease;
@@ -46,7 +43,7 @@
 <body>
     <button class="flex flex-row">
         <a href="{{ route('login') }}">
-            <img class="absolute mt-10 ml-[310px] sm:ml-[200px] md:ml-[100px] lg:ml-[310px]" src="resources\views\images\a.jpg" alt="">
+
             <h1 class="absolute text-3xl ml-[300px] sm:ml-[200px] md:ml-[100px] lg:ml-[310px] mt-5">iWaterFill</h1>
         </a>
     </button>

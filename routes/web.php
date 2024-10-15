@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -33,11 +34,11 @@ Route::middleware('auth')->group(function() {
         // Route para sa customer profile
     Route::get('/customer/profile', [ProfileController::class, 'index'])->name('profile');
 
-    Route::get('/userPayment', [PaymentController::class, 'userPayment'])->name('userPayment');
-    Route::post('/buying', [PaymentController::class, 'userBuy'])->name('userBuy');
+    Route::get('/userOrder', [OrderController::class, 'userOrder'])->name('userOrder');
+    Route::post('/buying', [OrderController::class, 'userBuy'])->name('userBuy');
 
     // Payment History and Editing
-    Route::get('/userhistory', [PaymentController::class, 'userhistory'])->name('userHistory');
+    Route::get('/userhistory', [OrderController::class, 'userhistory'])->name('userHistory');
      // Logout
 
 
@@ -48,9 +49,15 @@ Route::middleware('auth')->group(function() {
     Route::middleware(['role:admin'])->group(function () {
 
         Route::get('/admin/dashboard', [DashController::class, 'salesChart'])->name('dashboard');
+        Route::get('/orders_notif', [OrderController::class, 'orderNotif'])->name('order');
         // Payments and Purchase
        Route::get('/AddPurchase', [PaymentController::class, 'purchase'])->name('purchase');
        Route::post('/AddPurchase', [PaymentController::class, 'buy'])->name('buy');
+       // Orders
+       Route::get('/orders/pending', [OrderController::class, 'pendingOrders'])->name('order');
+       Route::post('/orders/place', [OrderController::class, 'placeOrder'])->name('placeOrder');
+
+
         // Customer List
        Route::get('/customerList', [DashController::class, 'customerList'])->name('customerList');
        // Products Management

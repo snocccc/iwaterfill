@@ -3,7 +3,7 @@
 @section('userDash')
 <div class="bg-[#caf0f8] min-h-screen py-8">
     <div class="container mx-auto px-4">
-        <h1 class="text-4xl font-bold text-[#03045e] mb-6">Payment History</h1>
+        <h1 class="text-4xl font-bold text-[#03045e] mb-6">Order History</h1>
 
         <div class="bg-white rounded-lg shadow-xl overflow-hidden">
             <div class="overflow-x-auto">
@@ -18,13 +18,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($payments as $payment)
+                        @foreach($orders as $order)
                         <tr class="border-b border-[#90e0ef] hover:bg-[#e6f8fc] transition duration-300">
-                            <td class="py-4 px-6">{{ $payment->product_Name }}</td>
-                            <td class="py-4 px-6">{{ $payment->username }}</td>
-                            <td class="py-4 px-6 font-medium text-[#03045e]">₱{{ number_format($payment->price, 2) }}</td>
-                            <td class="py-4 px-6">{{ \Carbon\Carbon::parse($payment->purchase_date)->format('F d, Y') }}</td>
-                            <td class="py-4 px-6">{{ $payment->quantity }}</td>
+                            <td class="py-4 px-6">{{ $order->product_Name }}</td>
+                            <td class="py-4 px-6">{{ $order->username }}</td>
+                            <td class="py-4 px-6 font-medium text-[#03045e]">₱{{ number_format($order->price, 2) }}</td>
+                            <td class="py-4 px-6">{{ \Carbon\Carbon::parse($order->purchase_date)->format('F d, Y') }}</td>
+                            <td class="py-4 px-6">{{ $order->quantity }}</td>
                         </tr>
                         @endforeach
                     </tbody>

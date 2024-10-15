@@ -77,15 +77,21 @@
                         <i class="ri-home-8-line mr-3"></i>
                         <span>Profile</span>
                     </a>
-                    <a href="{{ route('userPayment') }}" class="flex items-center p-3 text-gray-200 text-base rounded-lg {{ request()->routeIs('purchase') ? 'active' : '' }}">
+                    <a href="{{ route('userOrder') }}" class="flex items-center p-3 text-gray-200 text-base rounded-lg {{ request()->routeIs('purchase') ? 'active' : '' }}">
                         <i class="ri-shopping-bag-line mr-3"></i>
-                        <span>Add Purchase</span>
+                        <span>Add Order</span>
                     </a>
 
                     <a href="{{ route('userHistory') }}" class="flex items-center p-3 text-gray-200 text-base rounded-lg {{ request()->routeIs('history') ? 'active' : '' }}">
                         <i class="ri-history-line mr-3"></i>
-                        <span>Purchase History</span>
+                        <span>Order History</span>
                     </a>
+
+                    <a href="" class="flex items-center p-3 text-gray-200 text-base rounded-lg {{ request()->routeIs('history') ? 'active' : '' }}">
+                        <i class="ri-shopping-cart-line mr-3"></i>
+                        <span>Order</span>
+                    </a>
+
 
                 </nav>
                 <!-- Logout Button -->
