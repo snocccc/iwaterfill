@@ -14,7 +14,13 @@
             </div>
             @endif
 
-            <form action="{{ route('buy') }}" method="post" class="p-4 sm:p-6 space-y-4">
+            @if (session('error'))
+            <div class="m-4 p-3 bg-red-500 text-white rounded-md">
+                {{ session('error') }}
+            </div>
+            @endif
+
+            <form action="{{ route('buy') }}" method="post" class="p-4 sm:p-6 space-y-4" onsubmit="return validateForm()">
                 @csrf
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
@@ -48,6 +54,7 @@
                         <label for="purchase_date" class="block text-sm font-medium text-[#03045e]">Purchase Date and Time</label>
                         <input type="text" name="purchase_date" id="purchase_date" required
                                class="mt-1 block w-full border-2 border-[#90e0ef] rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#00b4d8] focus:border-[#00b4d8] transition duration-300 flatpickr">
+                        <div id="purchase_date_error" class="text-red-500 text-sm hidden">Please select a purchase date and time.</div>
                     </div>
                 </div>
                 <div>
@@ -75,6 +82,19 @@
             document.getElementById('price').value = totalPrice.toFixed(2);
         } else {
             document.getElementById('price').value = '';
+        }
+    }
+
+    function validateForm() {
+        const purchaseDate = document.getElementById('purchase_date').value;
+        const errorMessage = document.getElementById('purchase_date_error');
+
+        if (!purchaseDate) {
+            errorMessage.classList.remove('hidden');
+            return false; // Prevent form submission
+        } else {
+            errorMessage.classList.add('hidden');
+            return true; // Allow form submission
         }
     }
 

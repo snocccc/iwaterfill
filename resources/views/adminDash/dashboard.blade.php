@@ -38,16 +38,34 @@
 
 <!-- Chart Script -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
 <script>
     const salesData = @json($salesData);
     const totals = salesData.map(data => data.total_sales);
     const dates = salesData.map(data => data.date);
+    const period = '{{ $period }}';
+
+    const formatDate = (date) => {
+        const momentDate = moment(date);
+        switch(period) {
+            case 'weekly':
+                return momentDate.format('ddd');
+            case 'monthly':
+                return momentDate.format('MMM');
+            case 'yearly':
+                return momentDate.format('YYYY');
+            default:
+                return date;
+        }
+    };
+
+    const formattedDates = dates.map(formatDate);
 
     const ctx = document.getElementById('salesChart').getContext('2d');
     const salesChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: dates.length ? dates : ['No Data'],
+            labels: formattedDates.length ? formattedDates : ['No Data'],
             datasets: [{
                 label: 'Total Sales',
                 data: totals.length ? totals : [0],
