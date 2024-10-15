@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Payment; // Import your Payment model
+use App\Models\Payment;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon; // Import Carbon for date handling
@@ -17,6 +18,8 @@ class DashController extends Controller
     {
         return view('adminDash.dashboard');
     }
+
+//
 
     public function customerList()
     {

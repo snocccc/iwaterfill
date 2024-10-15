@@ -14,13 +14,8 @@ class OrderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function orderNotif()
-    {
-      // Halimbawa: Kunin ang bilang ng pending orders mula sa database
-    $pendingOrdersCount = Order::where('status', 'pending')->count();
+   // OrderController.php
 
-    return view('components.layoutDash', compact('pendingOrdersCount'));
-    }
 
     public function userhistory()
        {

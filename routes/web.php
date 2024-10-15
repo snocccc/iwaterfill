@@ -49,13 +49,14 @@ Route::middleware('auth')->group(function() {
     Route::middleware(['role:admin'])->group(function () {
 
         Route::get('/admin/dashboard', [DashController::class, 'salesChart'])->name('dashboard');
-        Route::get('/orders_notif', [OrderController::class, 'orderNotif'])->name('order');
         // Payments and Purchase
        Route::get('/AddPurchase', [PaymentController::class, 'purchase'])->name('purchase');
        Route::post('/AddPurchase', [PaymentController::class, 'buy'])->name('buy');
        // Orders
        Route::get('/orders/pending', [OrderController::class, 'pendingOrders'])->name('order');
        Route::post('/orders/place', [OrderController::class, 'placeOrder'])->name('placeOrder');
+
+
 
 
         // Customer List
