@@ -17,39 +17,20 @@
 </head>
 
 <style>
-    /* Add transition effects */
-    button:hover, button:focus, input:hover, input:focus {
-        transition: all 0.3s ease;
-        transform: scale(1.05);
-    }
-
-    button:hover {
-        background-color: #00509E;
-    }
-
-    .flex-row:hover img, .flex-row:hover h1 {
-        transition: all 0.3s ease;
-        transform: translateY(-10px);
-    }
-
-
-
-    .form-container:hover, .form-container:focus-within {
-        transition: all 0.3s ease;
-        box-shadow: 0px 0px 15px 5px rgba(0, 0, 0, 0.2);
+    :root {
+        --color-dark-blue: #03045E;
+        --color-medium-blue: #0077B6;
+        --color-light-blue: #00B4D8;
+        --color-very-light-blue: #90E0EF;
+        --color-pale-blue: #CAF0F8;
     }
 </style>
 
 <body>
-    <button class="flex flex-row">
-        <a href="{{ route('login') }}">
 
-            <h1 class="absolute text-3xl ml-[300px] sm:ml-[200px] md:ml-[100px] lg:ml-[310px] mt-5">iWaterFill</h1>
-        </a>
-    </button>
 
-    <div class="h-screen w-screen bg-[#c9d6ff] bg-gradient-to-r from-[#e2e2e2] to-[#c9d6ff] flex justify-center items-center font-mont">
-        @yield('auth')
-    </div>
+
+     @yield('auth')
+
 </body>
 </html>

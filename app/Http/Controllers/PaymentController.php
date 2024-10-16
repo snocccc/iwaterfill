@@ -6,6 +6,7 @@ use App\Models\Payment;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
@@ -64,6 +65,24 @@ class PaymentController extends Controller
     // Ibalik ang view kasama ang na-filter na records
     return view('adminDash.history', compact('payments'));
    }
+
+//    public function getSalesData(Request $request) {
+//       // Actual sales ngayong araw
+//       $totalSalesToday = Payment::whereDate('purchase_date', Carbon::today())->sum('price');
+
+//       // Total sales sa lahat ng panahon
+//       $totalSales = Payment::sum('price');
+
+//       // Forecasted sales: Kunin ang average ng nakaraang tatlong buwan
+//       $forecastedSales = Payment::whereBetween('purchase_date', [
+//               now()->subMonths(3)->startOfMonth(), now()->endOfMonth()
+//           ])
+//           ->select(DB::raw('SUM(price) / 3 as avg_sales')) // Average sa 3 buwan
+//           ->value('avg_sales');
+
+//       // Ibalik ang view kasama ang mga sales data
+//       return view('adminDash.dashboard', compact('totalSalesToday', 'totalSales', 'forecastedSales'));
+// }
 
    // Override the authenticated method
 

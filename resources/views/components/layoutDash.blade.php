@@ -32,10 +32,9 @@
         .sidebar {
             background-color: var(--color-dark-blue);
             transition: transform 0.3s ease;
-            z-index: 60; /* Itataas ang z-index ng sidebar */
+            z-index: 60;
         }
 
-        /* Sidebar hidden only on mobile */
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -57,6 +56,7 @@
         .sidebar a.active {
             background-color: var(--color-light-blue);
             color: var(--color-dark-blue);
+            pointer-events: none; /* Huwag payagan ang pag-click */
         }
 
         .main-content {
@@ -78,18 +78,18 @@
         }
 
         .sidebar-overlay {
-            display: none; /* Nakalagay ito sa default */
+            display: none;
             position: fixed;
             inset: 0;
             background-color: rgba(0, 0, 0, 0.5);
-            z-index: 50; /* Itataas ang z-index ng overlay */
+            z-index: 50;
             transition: opacity 0.3s ease;
             opacity: 0;
             pointer-events: none;
         }
 
         .sidebar-overlay.show {
-            display: block; /* Ipakita ang overlay kapag nakabukas ang sidebar */
+            display: block;
             opacity: 1;
             pointer-events: auto;
         }
@@ -99,7 +99,6 @@
 
     <div class="flex flex-col lg:flex-row lg:min-h-screen">
 
-        <!-- Mobile Menu Button -->
         <div class="p-4 bg-blue-600 text-white flex justify-between lg:hidden">
             <h1 class="text-2xl font-bold">iWaterFill</h1>
             <button id="menuButton" class="text-3xl">
@@ -107,10 +106,8 @@
             </button>
         </div>
 
-        <!-- Sidebar Overlay -->
         <div id="sidebar-overlay" class="sidebar-overlay lg:hidden"></div>
 
-        <!-- Sidebar -->
         <div id="sidebar" class="sidebar fixed inset-y-0 left-0 w-64 lg:relative lg:flex lg:flex-col lg:shadow-md lg:overflow-y-auto">
             <div class="flex items-center justify-between p-4">
                 <h1 class="text-white font-bold text-xl">iWaterFill</h1>
@@ -123,22 +120,22 @@
                     <a href="{{ route('dashboard') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                         <i class="ri-home-8-line mr-3"></i> Dashboard
                     </a>
-                    <a href="{{ route('purchase') }}" class="flex items-center p-3 text-gray-200 rounded-lg">
+                    <a href="{{ route('purchase') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('purchase') ? 'active' : '' }}">
                         <i class="ri-shopping-cart-line mr-3"></i> Add Purchase
                     </a>
-                    <a href="{{ route('order') }}" class="flex items-center p-3 text-gray-200 rounded-lg">
+                    <a href="{{ route('order') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('order') ? 'active' : '' }}">
                         <i class="ri-check-line mr-3"></i> Orders
                     </a>
-                    <a href="{{ route('customerList') }}" class="flex items-center p-3 text-gray-200 rounded-lg">
+                    <a href="{{ route('customerList') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('customerList') ? 'active' : '' }}">
                         <i class="ri-user-line mr-3"></i> Customer List
                     </a>
-                    <a href="{{ route('addProduct') }}" class="flex items-center p-3 text-gray-200 rounded-lg">
+                    <a href="{{ route('addProduct') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('addProduct') ? 'active' : '' }}">
                         <i class="ri-add-box-line mr-3"></i> Add Product
                     </a>
-                    <a href="{{ route('history') }}" class="flex items-center p-3 text-gray-200 rounded-lg">
+                    <a href="{{ route('history') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('history') ? 'active' : '' }}">
                         <i class="ri-time-line mr-3"></i> Transaction History
                     </a>
-                    <a href="{{ route('container') }}" class="flex items-center p-3 text-gray-200 rounded-lg">
+                    <a href="{{ route('container') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('container') ? 'active' : '' }}">
                         <i class="ri-inbox-line mr-3"></i> Available Containers
                     </a>
                     <div class="mt-auto pt-4 border-t border-gray-200">
@@ -154,7 +151,6 @@
             </div>
         </div>
 
-        <!-- Main Content -->
         <main class="flex-1 min-h-screen main-content">
             @yield('dash')
         </main>
