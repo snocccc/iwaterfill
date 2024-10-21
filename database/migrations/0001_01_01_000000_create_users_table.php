@@ -47,7 +47,7 @@ return new class extends Migration
                 'location' => 'Admin Location', // Add a valid location
                 'role' => 'admin',
                 'phone' => 1234567890, // Add a valid phone number
-                'password' => Hash::make('admin'),
+                'password' => Hash::make('a'),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

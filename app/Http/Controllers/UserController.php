@@ -26,7 +26,8 @@ class UserController extends Controller
       // papaayos mo ito sa chat gpt
 
         //redirect
-        return redirect()->route('login');
+        return redirect()->route('login')->with('success', 'Registration successful!');
+
 
     }
 

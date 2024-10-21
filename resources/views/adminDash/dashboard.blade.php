@@ -1,42 +1,84 @@
 @extends('components.layoutDash')
 
 @section('dash')
-<div class="bg-gradient-to-br from-[#caf0f8] to-[#90e0ef] min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto">
-        <h2 class="text-4xl font-extrabold text-center mb-12 text-[#03045e]">Sales Dashboard</h2>
+<div class="min-h-screen bg-gray-50 py-8 px-4">
+    <div class="max-w-7xl mx-auto space-y-6">
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+            <h2 class="text-2xl font-bold text-gray-900">Sales Dashboard</h2>
 
-        <!-- Total Sales Section -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-12">
-            <div class="bg-white p-8 rounded-2xl shadow-lg transition-transform hover:scale-105">
-                <h3 class="text-xl font-semibold text-[#0077b6] mb-3">Total Sales Today</h3>
-                <p class="text-4xl font-bold text-[#03045e]">₱{{ number_format($totalSalesToday, 2) }}</p>
-            </div>
-            <div class="bg-white p-8 rounded-2xl shadow-lg transition-transform hover:scale-105">
-                <h3 class="text-xl font-semibold text-[#0077b6] mb-3">Total Sales</h3>
-                <p class="text-4xl font-bold text-[#03045e]">₱{{ number_format($totalSales, 2) }}</p>
-            </div>
-        </div>
-
-        <!-- Period Select -->
-        <div class="mb-10 flex justify-center">
-            <form action="{{ route('dashboard') }}" method="GET" class="flex items-center bg-white p-2 rounded-full shadow-md">
-                <label for="period" class="mr-3 text-[#03045e] font-medium">View Sales:</label>
-                <select id="period" name="period" class="p-2 border-none rounded-full bg-[#e6f9ff] text-[#03045e] focus:outline-none focus:ring-2 focus:ring-[#00b4d8] transition-colors" onchange="this.form.submit()">
-                    <option value="weekly" {{ $period == 'weekly' ? 'selected' : '' }}>Weekly</option>
-                    <option value="monthly" {{ $period == 'monthly' ? 'selected' : '' }}>Monthly</option>
-                    <option value="yearly" {{ $period == 'yearly' ? 'selected' : '' }}>Yearly</option>
+            <!-- Period Select -->
+            <form action="{{ route('dashboard') }}" method="GET">
+                <select id="period" name="period"
+                        class="bg-white border border-gray-200 text-gray-900 text-sm rounded-lg px-4 py-2.5 focus:ring-blue-500 focus:border-blue-500"
+                        onchange="this.form.submit()">
+                    <option value="weekly" {{ $period == 'weekly' ? 'selected' : '' }}>Weekly View</option>
+                    <option value="monthly" {{ $period == 'monthly' ? 'selected' : '' }}>Monthly View</option>
+                    <option value="yearly" {{ $period == 'yearly' ? 'selected' : '' }}>Yearly View</option>
                 </select>
             </form>
         </div>
 
-        <!-- Chart.js Canvas -->
-        <div class="bg-white p-8 rounded-2xl shadow-lg">
-            <canvas id="salesChart" class="w-full" style="height: 400px;"></canvas>
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <!-- Today's Sales Card -->
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                <div class="p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <div class="p-2 bg-blue-50 rounded-lg">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-gray-500">Today's Sales</span>
+                        </div>
+                        <span class="text-xs font-medium text-gray-400">Last 24 hours</span>
+                    </div>
+                    <div class="mt-3">
+                        <p class="text-2xl font-bold text-gray-900">₱{{ number_format($totalSalesToday, 2) }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Sales Card -->
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                <div class="p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <div class="p-2 bg-green-50 rounded-lg">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-gray-500">Total Sales</span>
+                        </div>
+                        <span class="text-xs font-medium text-gray-400">All time</span>
+                    </div>
+                    <div class="mt-3">
+                        <p class="text-2xl font-bold text-gray-900">₱{{ number_format($totalSales, 2) }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Card -->
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Sales Overview</h3>
+                    <span class="text-sm text-gray-500">{{ ucfirst($period) }} Data</span>
+                </div>
+                <div class="h-[400px]">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Chart Script -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
 <script>
@@ -48,76 +90,61 @@
     const formatDate = (date) => {
         const momentDate = moment(date);
         switch(period) {
-            case 'weekly':
-                return momentDate.format('ddd');
-            case 'monthly':
-                return momentDate.format('MMM D');
-            case 'yearly':
-                return momentDate.format('MMM YYYY');
-            default:
-                return date;
+            case 'weekly': return momentDate.format('ddd');
+            case 'monthly': return momentDate.format('MMM D');
+            case 'yearly': return momentDate.format('MMM YYYY');
+            default: return date;
         }
     };
 
-    const formattedDates = dates.map(formatDate);
-
     const ctx = document.getElementById('salesChart').getContext('2d');
-    const salesChart = new Chart(ctx, {
+    new Chart(ctx, {
         type: 'line',
         data: {
-            labels: formattedDates.length ? formattedDates : ['No Data'],
+            labels: dates.map(formatDate),
             datasets: [{
-                label: 'Total Sales',
-                data: totals.length ? totals : [0],
-                borderColor: '#0077b6',
-                backgroundColor: 'rgba(0, 180, 216, 0.1)',
-                borderWidth: 3,
+                label: 'Sales',
+                data: totals,
+                borderColor: '#2563eb',
+                backgroundColor: '#93c5fd33',
+                borderWidth: 2,
                 fill: true,
                 tension: 0.4,
-                pointBackgroundColor: '#03045e',
+                pointRadius: 4,
+                pointBackgroundColor: '#2563eb',
                 pointBorderColor: '#fff',
                 pointBorderWidth: 2,
-                pointRadius: 5,
-                pointHoverRadius: 7
+                pointHoverRadius: 6
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: {
-                        callback: function(value, index, values) {
-                            return '₱' + value.toLocaleString();
-                        },
-                        font: {
-                            size: 12,
-                            weight: 'bold'
-                        }
+                    border: {
+                        display: false
                     },
                     grid: {
-                        color: 'rgba(0, 119, 182, 0.1)',
+                        color: '#e5e7eb',
                         drawBorder: false
+                    },
+                    ticks: {
+                        callback: value => '₱' + value.toLocaleString(),
+                        font: { size: 11 }
                     }
                 },
                 x: {
-                    title: {
-                        display: true,
-                        text: '{{ ucfirst($period) }} Period',
-                        font: {
-                            size: 14,
-                            weight: 'bold'
-                        }
-                    },
-                    ticks: {
-                        font: {
-                            size: 12,
-                            weight: 'bold'
-                        }
-                    },
                     grid: {
                         display: false
+                    },
+                    ticks: {
+                        font: { size: 11 }
                     }
                 }
             },
@@ -126,18 +153,12 @@
                     display: false
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(3, 4, 94, 0.8)',
-                    titleFont: {
-                        size: 14,
-                        weight: 'bold'
-                    },
-                    bodyFont: {
-                        size: 12
-                    },
+                    backgroundColor: '#1e40af',
+                    padding: 12,
+                    titleFont: { size: 13 },
+                    bodyFont: { size: 12 },
                     callbacks: {
-                        label: function(context) {
-                            return '₱' + context.parsed.y.toLocaleString();
-                        }
+                        label: context => '₱' + context.parsed.y.toLocaleString()
                     }
                 }
             }

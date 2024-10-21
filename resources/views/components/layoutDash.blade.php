@@ -124,7 +124,7 @@
                         <i class="ri-shopping-cart-line mr-3"></i> Add Purchase
                     </a>
                     <a href="{{ route('order') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('order') ? 'active' : '' }}">
-                        <i class="ri-check-line mr-3"></i> Orders
+                        <i class="ri-check-line mr-3"></i> Online Orders
                     </a>
                     <a href="{{ route('customerList') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('customerList') ? 'active' : '' }}">
                         <i class="ri-user-line mr-3"></i> Customer List

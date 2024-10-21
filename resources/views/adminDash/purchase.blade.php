@@ -2,7 +2,7 @@
 
 @section('dash')
 <div class="bg-[#caf0f8] min-h-screen py-6 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-5xl mx-auto">
         <div class="bg-white shadow-2xl rounded-lg overflow-hidden">
             <div class="bg-gradient-to-r from-[#03045e] to-[#0077b6] p-4 sm:p-6">
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-white text-center">Purchase Product</h2>
@@ -20,91 +20,80 @@
             </div>
             @endif
 
-            <form action="{{ route('buy') }}" method="post" class="p-4 sm:p-6 space-y-4" onsubmit="return validateForm()">
-                @csrf
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                        <label for="username" class="block text-sm font-medium text-[#03045e]">Customer Name</label>
-                        <input type="text" name="username" id="username" required
-                               class="mt-1 block w-full border-2 border-[#90e0ef] rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#00b4d8] focus:border-[#00b4d8] transition duration-300">
-                    </div>
-                    <div>
-                        <label for="product_id" class="block text-sm font-medium text-[#03045e]">Select Product</label>
-                        <select name="product_id" id="product_id" required
-                                class="mt-1 block w-full border-2 border-[#90e0ef] rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#00b4d8] focus:border-[#00b4d8] transition duration-300">
-                            <option value="" data-price="">Select a product</option>
-                            @foreach($products as $product)
-                                <option value="{{ $product->id }}" data-price="{{ $product->price }}">
-                                    {{ $product->product_Name }} - ${{ $product->price }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
-                        <label for="quantity" class="block text-sm font-medium text-[#03045e]">Quantity</label>
-                        <input type="number" name="quantity" id="quantity" required min="1"
-                               class="mt-1 block w-full border-2 border-[#90e0ef] rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#00b4d8] focus:border-[#00b4d8] transition duration-300">
-                    </div>
-                    <div>
-                        <label for="price" class="block text-sm font-medium text-[#03045e]">Total Price</label>
-                        <input type="number" name="price" id="price" readonly required
-                               class="mt-1 block w-full bg-[#f0f9ff] border-2 border-[#90e0ef] rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#00b4d8] focus:border-[#00b4d8] transition duration-300">
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label for="purchase_date" class="block text-sm font-medium text-[#03045e]">Purchase Date and Time</label>
-                        <input type="text" name="purchase_date" id="purchase_date" required
-                               class="mt-1 block w-full border-2 border-[#90e0ef] rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#00b4d8] focus:border-[#00b4d8] transition duration-300 flatpickr">
-                        <div id="purchase_date_error" class="text-red-500 text-sm hidden">Please select a purchase date and time.</div>
-                    </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+                @foreach($products as $product)
+                <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer" onclick="toggleDropdown('{{ $product->id }}')">
+                    <h3 class="text-xl font-bold text-[#03045e]">{{ $product->product_Name }}</h3>
+                    <p class="text-sm text-gray-600">{{ $product->description }}</p>
+                    <p class="mt-2 text-md font-semibold">
+                        Available Inventory: <span class="text-[#0077b6]">{{ $product->stock }}</span>
+                    </p>
+                    <p class="text-lg font-bold mt-4 text-[#023e8a]">₱{{ number_format($product->price, 2) }}</p>
+
+                    <!-- Form Section -->
+                    <form action="{{ route('buy') }}" method="post" class="p-4 space-y-4 hidden" id="form-{{ $product->id }}" onsubmit="return validateForm('{{ $product->id }}')">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+
+                        <!-- Username Input -->
+                        <label for="username-{{ $product->id }}" class="block text-sm font-medium text-[#03045e]">Customer Name</label>
+                        <input type="text" id="username-{{ $product->id }}" name="username"
+                               class="w-full border-2 border-[#90e0ef] rounded-md py-2 px-3 focus:outline-none focus:ring-[#00b4d8] focus:border-[#00b4d8] transition duration-300"
+                               placeholder="Enter customer name" required>
+
+                        <!-- Quantity Input -->
+                        <label for="quantity-{{ $product->id }}" class="block text-sm font-medium text-[#03045e] mt-4">Quantity</label>
+                        <input type="number" id="quantity-{{ $product->id }}" name="quantity" min="1" max="{{ $product->stock }}"
+                               class="w-full border-2 border-[#90e0ef] rounded-md py-2 px-3 focus:outline-none focus:ring-[#00b4d8] focus:border-[#00b4d8] transition duration-300"
+                               oninput="updateTotalPrice('{{ $product->id }}', {{ $product->price }})">
+
+                        <p class="mt-2">Total Price: ₱<span id="total-price-{{ $product->id }}">0.00</span></p>
+
+                        <button type="submit"
+                                class="w-full py-2 px-4 bg-[#00b4d8] text-white rounded-md hover:bg-[#0077b6] transition duration-300">
+                            Checkout
+                        </button>
+                    </form>
                 </div>
-                <div>
-                    <button type="submit"
-                            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#00b4d8] hover:bg-[#0077b6] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00b4d8] transition duration-300">
-                        Complete Purchase
-                    </button>
-                </div>
-            </form>
+                @endforeach
+            </div>
         </div>
     </div>
 </div>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
 <script>
-    function updatePrice() {
-        const selectedOption = document.getElementById('product_id').options[document.getElementById('product_id').selectedIndex];
-        const pricePerUnit = parseFloat(selectedOption.getAttribute('data-price'));
-        const quantity = parseInt(document.getElementById('quantity').value);
+    // Toggle the visibility of the product's form
+    function toggleDropdown(productId) {
+        // Hide all forms first
+        document.querySelectorAll('[id^="form-"]').forEach(form => form.classList.add('hidden'));
 
-        if (!isNaN(pricePerUnit) && !isNaN(quantity)) {
-            const totalPrice = pricePerUnit * quantity;
-            document.getElementById('price').value = totalPrice.toFixed(2);
-        } else {
-            document.getElementById('price').value = '';
-        }
+        // Show the clicked product's form
+        const form = document.getElementById(`form-${productId}`);
+        form.classList.toggle('hidden');
     }
 
-    function validateForm() {
-        const purchaseDate = document.getElementById('purchase_date').value;
-        const errorMessage = document.getElementById('purchase_date_error');
-
-        if (!purchaseDate) {
-            errorMessage.classList.remove('hidden');
-            return false; // Prevent form submission
-        } else {
-            errorMessage.classList.add('hidden');
-            return true; // Allow form submission
-        }
+    // Update the total price dynamically based on quantity input
+    function updateTotalPrice(productId, pricePerUnit) {
+        const quantity = parseInt(document.getElementById(`quantity-${productId}`).value) || 0;
+        const totalPrice = pricePerUnit * quantity;
+        document.getElementById(`total-price-${productId}`).textContent = totalPrice.toFixed(2);
     }
 
-    document.getElementById('product_id').addEventListener('change', updatePrice);
-    document.getElementById('quantity').addEventListener('input', updatePrice);
+    // Validate the form to ensure a valid quantity and username are entered
+    function validateForm(productId) {
+        const username = document.getElementById(`username-${productId}`).value;
+        const quantity = document.getElementById(`quantity-${productId}`).value;
 
-    flatpickr("#purchase_date", {
-        enableTime: true,
-        dateFormat: "F j, Y H:i",
-        theme: "airbnb"
-    });
+        if (!username) {
+            alert('Please enter the customer\'s name.');
+            return false;
+        }
+
+        if (!quantity || quantity <= 0) {
+            alert('Please enter a valid quantity.');
+            return false;
+        }
+        return true;
+    }
 </script>
 @endsection

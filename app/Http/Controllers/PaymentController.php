@@ -24,32 +24,38 @@ class PaymentController extends Controller
      */
     public function buy(Request $request)
     {
-       // Validate the incoming request data
-    $validated = $request->validate([
-        'username' => 'required|string|max:255',
-        'product_id' => 'required|exists:products,id',
-        'quantity' => 'required|integer|min:1',
-        'price' => 'required|numeric',
-        'purchase_date' => 'required|string', // Validate as string instead of date
-    ]);
+        // Validate the incoming request data
+        $validated = $request->validate([
+            'username'     => 'required|string|max:255',
+            'product_id'   => 'required|exists:products,id',
+            'quantity'     => 'required|integer|min:1',
+        ]);
 
-    // Parse the purchase_date using Carbon
-    $purchaseDate = Carbon::createFromFormat('F j, Y H:i', $validated['purchase_date']);
+        // Retrieve the product based on product_id
+        $product = Product::findOrFail($validated['product_id']);
 
-    // Retrieve the product based on the selected product_id
-    $product = Product::findOrFail($validated['product_id']);
+        // Compute the total price
+        $totalPrice = $product->price * $validated['quantity'];
 
-    // Create a new Payment record
-    Payment::create([
-        'username' => $validated['username'],
-        'product_Name' => $product->product_Name,
-        'quantity' => $validated['quantity'],
-        'price' => $validated['price'],
-        'purchase_date' => $purchaseDate, // Use the formatted date
-    ]);
+        // Ensure stock availability
+        if ($validated['quantity'] > $product->stock) {
+            return redirect()->route('purchase')->with('error', 'Insufficient stock for this product.');
+        }
 
-    // Redirect back with a success message
-    return redirect()->route('purchase')->with('success', 'Purchase completed successfully.');
+        // Create a new Payment record
+        Payment::create([
+            'username'     => $validated['username'],
+            'product_Name' => $product->product_Name,
+            'quantity'     => $validated['quantity'],
+            'price'        => $totalPrice,
+            'purchase_date' => now(),  // Save the current timestamp
+        ]);
+
+        // Update product stock
+        $product->decrement('stock', $validated['quantity']);
+
+        // Redirect with a success message
+        return redirect()->route('purchase')->with('success', 'Purchase completed successfully.');
     }
 
     public function adminHistory(Request $request)

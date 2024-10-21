@@ -16,6 +16,7 @@
                             <th class="py-2 px-4 text-left font-semibold text-sm md:text-base">Price</th>
                             <th class="py-2 px-4 text-left font-semibold text-sm md:text-base">Purchase Date</th>
                             <th class="py-2 px-4 text-left font-semibold text-sm md:text-base">Quantity</th>
+                            <th class="py-2 px-4 text-left font-semibold text-sm md:text-base">Status</th> <!-- New Status Column -->
                         </tr>
                     </thead>
                     <tbody>
@@ -26,6 +27,7 @@
                             <td class="py-2 px-4 text-sm md:text-base font-medium text-[#03045e]">₱{{ number_format($order->price, 2) }}</td>
                             <td class="py-2 px-4 text-sm md:text-base">{{ \Carbon\Carbon::parse($order->purchase_date)->format('F d, Y') }}</td>
                             <td class="py-2 px-4 text-sm md:text-base">{{ $order->quantity }}</td>
+                            <td class="py-2 px-4 text-sm md:text-base">{{ $order->status ? 'Done' : 'Processing' }}</td> <!-- Display Status -->
                         </tr>
                         @endforeach
                     </tbody>
@@ -41,6 +43,7 @@
                     <p>Price: <span class="font-medium text-[#03045e]">₱{{ number_format($order->price, 2) }}</span></p>
                     <p>Purchase Date: {{ \Carbon\Carbon::parse($order->purchase_date)->format('F d, Y') }}</p>
                     <p>Quantity: {{ $order->quantity }}</p>
+                    <p>Status: <span class="{{ $order->status ? 'text-green-500' : 'text-yellow-500' }}">{{ $order->status ? 'Done' : 'Processing' }}</span></p> <!-- Display Status -->
                 </div>
                 @endforeach
             </div>

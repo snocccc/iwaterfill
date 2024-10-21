@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+
 
 
 class ProfileController extends Controller
@@ -48,18 +50,52 @@ class ProfileController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
-    {
-        //
+    public function edit()
+{
+    $user = Auth::user();  // Kunin ang authenticated user
+    return view('userDash.userEdit', compact('user'));
+}
+
+public function update(Request $request)
+{
+    $user = Auth::user();  // Kunin ang authenticated user
+
+    // Validation ng mga input
+    $validated = $request->validate([
+        'username' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'location' => 'nullable|string|max:255',
+        'phone' => 'nullable|string|max:15',
+    ]);
+
+    // I-update ang user data
+    $user->update($validated);
+
+    return redirect()->route('profile')
+        ->with('success', 'Profile updated successfully.');
+}
+
+public function updatePassword(Request $request)
+{
+    $request->validate([
+        'current_password' => 'required',
+        'new_password' => 'required|confirmed',
+    ]);
+
+    $user = Auth::user();
+
+    // I-verify kung tama ang kasalukuyang password
+    if (!Hash::check($request->current_password, $user->password)) {
+        return back()->withErrors(['current_password' => 'Mali ang kasalukuyang password.']);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+    // I-update ang password
+    $user->password = Hash::make($request->new_password);
+    $user->save();
+
+    return back()->with('success', 'Password updated successfully.');
+}
+
 
     /**
      * Remove the specified resource from storage.

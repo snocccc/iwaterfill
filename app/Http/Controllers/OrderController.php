@@ -44,11 +44,8 @@ class OrderController extends Controller
     $validated = $request->validate([
         'product_id' => 'required|exists:products,id',
         'quantity' => 'required|integer|min:1',
-        'purchase_date' => 'required|string', // Validate as string
     ]);
 
-    // Parse the purchase_date using Carbon
-    $purchaseDate = Carbon::createFromFormat('F j, Y H:i', $validated['purchase_date']);
 
     // Retrieve the product based on the selected product_id
     $product = Product::findOrFail($validated['product_id']);
@@ -62,7 +59,7 @@ class OrderController extends Controller
         'product_Name' => $product->product_Name,
         'quantity' => $validated['quantity'],
         'price' => $product->price * $validated['quantity'],
-        'purchase_date' => $purchaseDate,
+        'purchase_date' => now(),
         'status' => false, // Default status is false
     ]);
 

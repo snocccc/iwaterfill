@@ -33,6 +33,15 @@ Route::middleware('auth')->group(function() {
 
         // Route para sa customer profile
     Route::get('/customer/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
+    Route::view('profile/update-password', 'userDash.changePass')->name('profile.updatePassword');
+
+
+
+
+
 
     Route::get('/userOrder', [OrderController::class, 'userOrder'])->name('userOrder');
     Route::post('/buying', [OrderController::class, 'userBuy'])->name('userBuy');
