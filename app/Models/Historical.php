@@ -9,7 +9,7 @@ class Historical extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'monthlySale',
-        'monthlyCost',
+        'name',
+        'amount',
     ];
 }

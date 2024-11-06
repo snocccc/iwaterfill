@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('historicals', function (Blueprint $table) {
             $table->id();
-            $table->decimal('monthlySale');
-            $table->decimal('monthlyCost');
+            $table->string('name');
+            $table->decimal('amount');
             $table->timestamps();
         });
     }
