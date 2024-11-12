@@ -1,7 +1,7 @@
 @extends('components.layoutDash')
 
 @section('dash')
-<div class="min-h-screen bg-gray-50 py-8 px-4">
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 py-8 px-4">
     <div class="max-w-7xl mx-auto space-y-6">
         <!-- Header -->
         <div class="flex items-center justify-between">
@@ -27,7 +27,7 @@
             </form>
         </div>
 
-        <!-- Stats Grid -->
+        <!-- Primary Stats Grid - Current Performance -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <!-- Today's Sales Card -->
             <div class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
@@ -50,7 +50,77 @@
                     </div>
                     <div class="mt-3 flex items-center space-x-2">
                         <p class="text-2xl font-bold text-gray-900">₱{{ number_format($totalSalesToday, 2) }}</p>
-                        <!-- Add a trending icon based on performance -->
+                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Predicted Sales Card -->
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <div class="p-2 bg-purple-50 rounded-lg">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-gray-500">Predicted Sales (Tomorrow)</span>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        @if($predictedSales === 'no data yet')
+                            <p class="text-xl font-semibold text-red-500">No data yet</p>
+                        @else
+                            <p class="text-2xl font-bold text-gray-900">₱{{ number_format((float) $predictedSales, 2) }}</p>
+                            <p class="text-xs text-gray-500 mt-1">Based on recent trends</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secondary Stats Grid - Historical Performance -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <!-- Average Weekly Sales Card -->
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <div class="p-2 bg-indigo-50 rounded-lg">
+                                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-gray-500">Weekly Average</span>
+                        </div>
+                    </div>
+                    <div class="mt-3 flex items-center space-x-2">
+                        <p class="text-2xl font-bold text-gray-900">₱{{ number_format($averageWeeklySales, 2) }}</p>
+                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Average Monthly Sales Card -->
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <div class="p-2 bg-purple-50 rounded-lg">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-gray-500">Monthly Average</span>
+                        </div>
+                    </div>
+                    <div class="mt-3 flex items-center space-x-2">
+                        <p class="text-2xl font-bold text-gray-900">₱{{ number_format($averageMonthlySales, 2) }}</p>
                         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                         </svg>
@@ -87,7 +157,30 @@
             </div>
         </div>
 
-        <!-- Chart Card -->
+        <!-- Product Stocks Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            @foreach($stocks as $productName => $stocks)
+                <div class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                    <div class="p-5">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <div class="p-2 bg-yellow-50 rounded-lg">
+                                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13h1v4H3zM10 3h1v10h-1zM17 8h1v5h-1z"/>
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-medium text-gray-500">Stock of {{ $productName }}</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 flex items-center space-x-2">
+                            <p class="text-2xl font-bold text-gray-900">{{ $stocks }} units</p>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        <!-- Sales Chart -->
         <div class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">

@@ -34,17 +34,38 @@ class ProductController extends Controller
     }
     // ProductController.php
 
-public function showContainers()
+    public function showContainers()
+    {
+        // Kunin ang mga produkto na may pangalan na "Big Container" o "Container"
+        $containers = Product::whereIn('product_Name', ['Galoon', 'Container'])->get();
+
+        // Kunin ang lahat ng mga produkto
+        $allProducts = Product::all();
+
+        // Ibalik ang view na may compact ng containers at allProducts
+        return view('adminDash.container', compact('containers', 'allProducts'));
+    }
+
+    public function updateStock(Request $request)
 {
-      // Kumuha ng lahat ng products na containers (Big Container, Container)
-    $containers = Product::all();
+    // Kunin ang mga updated na stock mula sa form
+    $updatedStocks = $request->input('stock');
 
-    // Kumuha ng lahat ng products sa database
-    $allProducts = Product::all();
+    // I-update ang stock para sa bawat produkto
+    foreach ($updatedStocks as $productId => $stock) {
+        $product = Product::find($productId);
+        if ($product) {
+            // I-update ang stock ng produkto
+            $product->stock = $stock;
+            $product->save();
+        }
+    }
 
-    // Ibalik ang view na may compact ng containers at lahat ng products
-    return view('adminDash.container', compact('containers', 'allProducts'));
+    // Magbalik ng success message at i-redirect
+    return redirect()->back()->with('success', 'Stocks updated successfully!');
 }
+
+
 
 public function borrowContainer(Request $request)
 {

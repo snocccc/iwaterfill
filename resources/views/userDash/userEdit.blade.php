@@ -1,7 +1,7 @@
 @extends('components.layoutUser')
 
 @section('userDash')
-<div class="min-h-screen flex items-center justify-center bg-[#CAF0F8] p-6">
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-cyan-50">
     <div class="max-w-lg w-full bg-white shadow-xl rounded-lg overflow-hidden">
         <div class="bg-[#03045E] text-white py-4 px-6 text-center">
             <h2 class="text-2xl font-semibold">Edit Profile</h2>

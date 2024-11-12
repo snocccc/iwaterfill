@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('product_Name');
             $table->integer('quantity');
             $table->decimal('price', 8, 2);
+            $table->string('image_url')->nullable();
             $table->dateTime('purchase_date');
             $table->boolean('status')->default(false);
             $table->timestamps();

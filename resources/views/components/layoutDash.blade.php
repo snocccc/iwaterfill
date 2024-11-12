@@ -126,17 +126,18 @@
                     <a href="{{ route('order') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('order') ? 'active' : '' }}">
                         <i class="ri-check-line mr-3"></i> Online Orders
                     </a>
+                    <a href="{{ route('container') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('container') ? 'active' : '' }}">
+                        <i class="ri-inbox-line mr-3"></i> Inventory
+                    </a>
                     <a href="{{ route('customerList') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('customerList') ? 'active' : '' }}">
                         <i class="ri-user-line mr-3"></i> Customer List
                     </a>
-                    <a href="{{ route('addProduct') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('addProduct') ? 'active' : '' }}">
+
+                    {{-- <a href="{{ route('addProduct') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('addProduct') ? 'active' : '' }}">
                         <i class="ri-add-box-line mr-3"></i> Add Product
-                    </a>
+                    </a> --}}
                     <a href="{{ route('history') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('history') ? 'active' : '' }}">
                         <i class="ri-time-line mr-3"></i> Transaction History
-                    </a>
-                    <a href="{{ route('container') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('container') ? 'active' : '' }}">
-                        <i class="ri-inbox-line mr-3"></i> Available Containers
                     </a>
                     <div class="mt-auto pt-4 border-t border-gray-200">
                         <form action="{{ route('logout') }}" method="POST">

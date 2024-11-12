@@ -1,7 +1,7 @@
 @extends('components.layoutDash')
 
 @section('dash')
-<div class="bg-white min-h-screen py-8">
+<div class="bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header Section -->
         <div class="mb-8 flex items-center gap-3">

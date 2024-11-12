@@ -1,94 +1,102 @@
 @extends('components.layoutUser')
 
 @section('userDash')
-<div class="min-h-screen bg-[#caf0f8] p-4">
-    <div class="max-w-lg mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-[#03045e] to-[#0077b6] py-4 px-6">
-            <h2 class="text-xl font-semibold text-white text-center">Make Order</h2>
-        </div>
+<div class="bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen py-6 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-5xl mx-auto">
+        <div class="bg-white shadow-2xl rounded-lg overflow-hidden">
+            <div class="bg-gradient-to-r from-[#03045e] to-[#0077b6] p-4 sm:p-6">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white text-center">Purchase Product</h2>
+            </div>
 
-        <!-- Success Message -->
-        @if (session('success'))
-        <div class="m-4 p-3 bg-[#90e0ef] text-[#03045e] rounded-lg">
-            {{ session('success') }}
-        </div>
-        @endif
+            @if (session('success'))
+            <div class="m-4 p-3 bg-[#90e0ef] text-[#03045e] rounded-md">
+                {{ session('success') }}
+            </div>
+            @endif
 
-        <!-- Products List -->
-        <div class="p-4 space-y-3">
-            @foreach ($products as $product)
-            <div class="border border-[#90e0ef] rounded-lg hover:shadow-md transition-all duration-200"
-                 x-data="{ open: false, quantity: 1,
-                          total: {{ $product->price }},
-                          updateTotal() { this.total = (this.quantity * {{ $product->price }}).toFixed(2) }
-                        }">
+            @if (session('error'))
+            <div class="m-4 p-3 bg-red-500 text-white rounded-md">
+                {{ session('error') }}
+            </div>
+            @endif
 
-                <!-- Product Header -->
-                <div class="p-3 cursor-pointer" @click="open = !open">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h3 class="font-medium text-[#03045e]">{{ $product->product_Name }}</h3>
-                            <p class="text-sm text-[#0077b6]">{{ $product->description }}</p>
-                        </div>
-                        <span class="font-semibold text-[#00b4d8]">${{ $product->price }}</span>
-                    </div>
-                </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+                @foreach($products as $product)
+                <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer" onclick="toggleDropdown('{{ $product->id }}')">
+                    <!-- Image for the product -->
+                    <img src="{{ asset('images/' . $product->image_url . '.png') }}" alt="{{ $product->product_Name }}" class="w-full h-48 object-cover rounded-lg mb-4">
 
-                <!-- Order Form -->
-                <div x-show="open"
-                     x-transition:enter="transition ease-out duration-200"
-                     x-transition:enter-start="opacity-0"
-                     x-transition:enter-end="opacity-100"
-                     class="border-t border-[#90e0ef] p-3 bg-[#f8f9fa]">
+                    <h3 class="text-xl font-bold text-[#03045e]">{{ $product->product_Name }}</h3>
+                    <p class="text-sm text-gray-600">{{ $product->description }}</p>
+                    <p class="mt-2 text-md font-semibold">
+                        Available Inventory: <span class="text-[#0077b6]">{{ $product->stock }}</span>
+                    </p>
+                    <p class="text-lg font-bold mt-4 text-[#023e8a]">₱{{ number_format($product->price, 2) }}</p>
 
-                    <form action="{{ route('userBuy') }}" method="POST" class="space-y-3">
+                    <!-- Form Section -->
+                    <form action="{{ route('userBuy') }}" method="post" class="p-4 space-y-4 hidden" id="form-{{ $product->id }}" onsubmit="return validateForm('{{ $product->id }}')">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
 
-                        <!-- Customer Name -->
-                        <div>
-                            <label class="block text-sm text-[#03045e] mb-1">Customer Name</label>
-                            <input type="text"
-                                   name="username"
-                                   value="{{ auth()->user()->username }}"
-                                   class="w-full p-2 bg-[#f0f9ff] border border-[#90e0ef] rounded-lg"
-                                   readonly>
-                        </div>
+                        <!-- Username Input -->
+                        <label for="username-{{ $product->id }}" class="block text-sm font-medium text-[#03045e]">Customer Name</label>
+                        <input type="text" id="username-{{ $product->id }}" name="username"
+                               class="w-full border-2 border-[#90e0ef] rounded-md py-2 px-3 focus:outline-none focus:ring-[#00b4d8] focus:border-[#00b4d8] transition duration-300"
+                               value="{{ auth()->user()->username }}" readonly>
 
-                        <!-- Quantity -->
-                        <div>
-                            <label class="block text-sm text-[#03045e] mb-1">Quantity</label>
-                            <input type="number"
-                                   name="quantity"
-                                   x-model="quantity"
-                                   @input="updateTotal"
-                                   min="1"
-                                   class="w-full p-2 border border-[#90e0ef] rounded-lg focus:border-[#00b4d8] focus:outline-none">
-                        </div>
+                        <!-- Quantity Input -->
+                        <label for="quantity-{{ $product->id }}" class="block text-sm font-medium text-[#03045e] mt-4">Quantity</label>
+                        <input type="number" id="quantity-{{ $product->id }}" name="quantity" min="1" max="{{ $product->stock }}"
+                               class="w-full border-2 border-[#90e0ef] rounded-md py-2 px-3 focus:outline-none focus:ring-[#00b4d8] focus:border-[#00b4d8] transition duration-300"
+                               oninput="updateTotalPrice('{{ $product->id }}', {{ $product->price }})">
 
-                        <!-- Total Price -->
-                        <div>
-                            <label class="block text-sm text-[#03045e] mb-1">Total Price</label>
-                            <input type="number"
-                                   name="price"
-                                   x-model="total"
-                                   class="w-full p-2 bg-[#f0f9ff] border border-[#90e0ef] rounded-lg"
-                                   readonly>
-                        </div>
+                        <p class="mt-2">Total Price: ₱<span id="total-price-{{ $product->id }}">0.00</span></p>
 
-                        <!-- Submit Button -->
                         <button type="submit"
-                                class="w-full bg-[#00b4d8] hover:bg-[#0077b6] text-white p-2 rounded-lg transition-colors duration-200">
-                            Place Order
+                                class="w-full py-2 px-4 bg-[#00b4d8] text-white rounded-md hover:bg-[#0077b6] transition duration-300">
+                            Checkout
                         </button>
                     </form>
                 </div>
+                @endforeach
             </div>
-            @endforeach
         </div>
     </div>
 </div>
 
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.min.js"></script>
+<script>
+    // Toggle the visibility of the product's form
+    function toggleDropdown(productId) {
+        // Hide all forms first
+        document.querySelectorAll('[id^="form-"]').forEach(form => form.classList.add('hidden'));
+
+        // Show the clicked product's form
+        const form = document.getElementById(`form-${productId}`);
+        form.classList.toggle('hidden');
+    }
+
+    // Update the total price dynamically based on quantity input
+    function updateTotalPrice(productId, pricePerUnit) {
+        const quantity = parseInt(document.getElementById(`quantity-${productId}`).value) || 0;
+        const totalPrice = pricePerUnit * quantity;
+        document.getElementById(`total-price-${productId}`).textContent = totalPrice.toFixed(2);
+    }
+
+    // Validate the form to ensure a valid quantity and username are entered
+    function validateForm(productId) {
+        const username = document.getElementById(`username-${productId}`).value;
+        const quantity = document.getElementById(`quantity-${productId}`).value;
+
+        if (!username) {
+            alert('Please enter the customer\'s name.');
+            return false;
+        }
+
+        if (!quantity || quantity <= 0) {
+            alert('Please enter a valid quantity.');
+            return false;
+        }
+        return true;
+    }
+</script>
 @endsection

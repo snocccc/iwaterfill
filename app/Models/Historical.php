@@ -9,7 +9,9 @@ class Historical extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name',
-        'amount',
+        'period_type',
+        'start_date',
+        'end_date',
+        'total_sales',
     ];
 }

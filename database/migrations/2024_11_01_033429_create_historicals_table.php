@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('historicals', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->decimal('amount');
+            $table->string('period_type'); // 'weekly' o 'monthly'
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->decimal('total_sales', 15, 2);
             $table->timestamps();
         });
     }

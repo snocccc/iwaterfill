@@ -1,7 +1,7 @@
 @extends('components.layoutDash')
 
 @section('dash')
-<div class="bg-[#caf0f8] min-h-screen py-6 px-4 sm:px-6 lg:px-8">
+<div class="bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen py-6 px-4 sm:px-6 lg:px-8">
     <div class="max-w-5xl mx-auto">
         <div class="bg-white shadow-2xl rounded-lg overflow-hidden">
             <div class="bg-gradient-to-r from-[#03045e] to-[#0077b6] p-4 sm:p-6">
@@ -23,6 +23,9 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
                 @foreach($products as $product)
                 <div class="bg-white p-6 rounded-lg shadow-md cursor-pointer" onclick="toggleDropdown('{{ $product->id }}')">
+                    <!-- Image for the product -->
+                    <img src="{{ asset('images/' . $product->image_url . '.png') }}" alt="{{ $product->product_Name }}" class="w-full h-48 object-cover rounded-lg mb-4">
+
                     <h3 class="text-xl font-bold text-[#03045e]">{{ $product->product_Name }}</h3>
                     <p class="text-sm text-gray-600">{{ $product->description }}</p>
                     <p class="mt-2 text-md font-semibold">

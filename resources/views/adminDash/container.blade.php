@@ -1,118 +1,188 @@
 @extends('components.layoutDash')
-
 @section('dash')
-<div class="min-h-screen bg-gray-50">
-    <div class="max-w-4xl mx-auto px-4 py-8">
-        <!-- Header Section -->
-        <div class="mb-8 flex items-center">
-            <svg class="h-8 w-8 text-indigo-600 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">
-                    Welcome back, {{ auth()->user()->username }}
-                </h1>
-                <p class="mt-2 text-sm text-gray-600">
-                    Manage your inventory and container transactions
-                </p>
-            </div>
+<section class="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 p-6">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-blue-900 mb-2">
+                Welcome back, {{ auth()->user()->username }}
+            </h1>
+            <p class="text-blue-600/75">Manage your inventory with ease</p>
         </div>
 
         @if(session('success'))
-            <div class="mb-6 rounded-lg bg-green-50 p-4 border-l-4 border-green-400">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
+            <div class="mb-6 transform transition-all animate-fadeIn">
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+                    <div class="flex">
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-700">
+                                {{ session('success') }}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         @endif
 
-        <div class="space-y-6">
-            <!-- Product Quantities Card -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                <div class="p-4 border-b border-gray-200">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center">
-                            <svg class="h-5 w-5 text-gray-500 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/>
-                                <path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/>
-                                <path d="M18 12c0-1.1-.9-2-2-2H4"/>
+        <!-- Products Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            @foreach($allProducts as $product)
+                <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">{{ $product->product_Name }}</h3>
+                        <button
+                            onclick="toggleStockInput({{ $product->id }})"
+                            class="text-blue-500 hover:text-blue-700 transition-colors"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                             </svg>
-                            <h2 class="text-lg font-semibold text-gray-900">Product Quantities</h2>
-                        </div>
-                        <button onclick="toggleForm('editForm')" class="flex items-center text-sm text-indigo-600 hover:text-indigo-900">
-                            <svg class="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                            </svg>
-                            Edit
                         </button>
                     </div>
-                </div>
-                <!-- Rest of Product Quantities section remains the same -->
-            </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="text-3xl font-bold text-blue-900">{{ $product->stock }}</div>
+                        <div class="text-sm text-gray-500">units in stock</div>
+                    </div>
 
-            <!-- Available Containers Card -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                <div class="p-4 border-b border-gray-200">
-                    <div class="flex items-center">
-                        <svg class="h-5 w-5 text-gray-500 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                            <line x1="12" y1="22.08" x2="12" y2="12"/>
-                        </svg>
-                        <h2 class="text-lg font-semibold text-gray-900">Available Containers</h2>
+                    <!-- Edit Stock Form -->
+                    <div id="stockInputForm{{ $product->id }}" class="hidden mt-4">
+                        <form action="{{ route('updateProducts') }}" method="POST">
+                            @csrf
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-sm font-medium text-gray-700">Update Stock</label>
+                                    <input
+                                        type="number"
+                                        name="stock[{{ $product->id }}]"
+                                        value="{{ $product->stock }}"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                                    >
+                                </div>
+                                <button
+                                    type="submit"
+                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
+                                >
+                                    Update
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                <!-- Rest of Available Containers section remains the same -->
+            @endforeach
+        </div>
+
+        <!-- Container Management Section -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-900">Container Management</h2>
+                <div class="space-x-3">
+                    <button
+                        onclick="toggleForm('borrowForm'); hideForm('returnForm')"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
+                    >
+                        Borrow Container
+                    </button>
+                    <button
+                        onclick="toggleForm('returnForm'); hideForm('borrowForm')"
+                        class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-md transition-colors"
+                    >
+                        Return Container
+                    </button>
+                </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="toggleForm('borrowForm'); hideForm('returnForm')"
-                        class="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    <svg class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M19 14v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6"/>
-                        <polyline points="12 3 12 15"/>
-                        <path d="M5 8l7-5 7 5"/>
-                    </svg>
-                    Borrow Container
-                </button>
-                <button onclick="toggleForm('returnForm'); hideForm('borrowForm')"
-                        class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    <svg class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M19 10v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6"/>
-                        <polyline points="12 21 12 9"/>
-                        <path d="M5 16l7 5 7-5"/>
-                    </svg>
-                    Return Container
-                </button>
+            <!-- Available Containers -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                @foreach($containers as $container)
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="text-sm text-gray-500 mb-1">{{ $container->product_Name}}</div>
+                        <div class="text-2xl font-bold text-gray-900">{{ $container->availableCon}}</div>
+                    </div>
+                @endforeach
             </div>
 
-            <!-- Forms remain the same -->
+            <!-- Borrow Form -->
+            <div id="borrowForm" class="hidden">
+                <form action="{{ route('borrowContainer') }}" method="POST" class="space-y-4 bg-gray-50 rounded-lg p-6">
+                    @csrf
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Borrow Container</h3>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Select Container</label>
+                        <select name="product_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            @foreach($containers as $container)
+                                <option value="{{ $container->product_Name }}">{{ $container->product_Name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Quantity</label>
+                        <input type="number" name="borrow_quantity" min="1" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
+                        Confirm Borrow
+                    </button>
+                </form>
+            </div>
+
+            <!-- Return Form -->
+            <div id="returnForm" class="hidden">
+                <form action="{{ route('returnContainer') }}" method="POST" class="space-y-4 bg-gray-50 rounded-lg p-6">
+                    @csrf
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Return Container</h3>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Select Container</label>
+                        <select name="return_product_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            @foreach($containers as $container)
+                                <option value="{{ $container->product_Name }}">{{ $container->product_Name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Quantity</label>
+                        <input type="number" name="return_quantity" min="1" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
+                        Confirm Return
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
+</section>
+
+<style>
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+        animation: fadeIn 0.3s ease-out;
+    }
+</style>
 
 <script>
     function toggleForm(formId) {
-        var form = document.getElementById(formId);
-        if (form) {
-            form.style.display = form.style.display === "none" ? "block" : "none";
+        const form = document.getElementById(formId);
+        if (form.style.display === "none" || !form.style.display) {
+            form.style.display = "block";
+            form.classList.add('animate-fadeIn');
+        } else {
+            form.style.display = "none";
         }
     }
 
     function hideForm(formId) {
-        var form = document.getElementById(formId);
-        if (form) {
-            form.style.display = "none";
+        const form = document.getElementById(formId);
+        form.style.display = "none";
+    }
+
+    function toggleStockInput(id) {
+        const form = document.getElementById(`stockInputForm${id}`);
+        if (form.classList.contains('hidden')) {
+            form.classList.remove('hidden');
+            form.classList.add('animate-fadeIn');
+        } else {
+            form.classList.add('hidden');
         }
     }
 </script>

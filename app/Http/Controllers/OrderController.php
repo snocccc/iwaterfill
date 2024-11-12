@@ -59,6 +59,7 @@ class OrderController extends Controller
         'product_Name' => $product->product_Name,
         'quantity' => $validated['quantity'],
         'price' => $product->price * $validated['quantity'],
+        'image_url' => $product->image_url,
         'purchase_date' => now(),
         'status' => false, // Default status is false
     ]);
@@ -78,26 +79,41 @@ class OrderController extends Controller
     }
 
     public function placeOrder(Request $request)
-    {
-        // Kunin ang order gamit ang ID mula sa request
-        $order = Order::findOrFail($request->order_id);
+{
+    // Kunin ang order gamit ang ID mula sa request
+    $order = Order::findOrFail($request->order_id);
 
-        // I-update ang status ng order sa true (success)
-        $order->status = true;
-        $order->save();
+    // I-update ang status ng order sa true (success)
+    $order->status = true;
+    $order->save();
 
-        // Kapag successful ang pag-save ng status, i-save rin sa Payment table
-        Payment::create([
-            'username'      => $order->username,
-            'product_Name'  => $order->product_Name,
-            'quantity'  => $order->quantity,
-            'price'         => $order->price,
-            'purchase_date' => now(), // Itinatala ang kasalukuyang date/time ng purchase
-        ]);
+    // Hanapin ang produkto gamit ang pangalan ng produkto
+    $product = Product::where('product_Name', $order->product_Name)->first();
 
-        // I-redirect pabalik sa pending orders na may success message
-        return redirect()->back()->with('message', 'Order placed and saved to payment successfully!');
+    // Siguraduhin na ang produkto ay matatagpuan
+    if ($product) {
+        // Bawasan ang stock ng produkto batay sa quantity ng order
+        $product->stock -= $order->quantity;
+
+        // I-save ang mga pagbabago sa produkto
+        $product->save();
+    } else {
+        // Kung walang produkto na natagpuan, magbigay ng error
+        return redirect()->back()->with('error', 'Product not found!');
     }
+
+    // Kapag successful ang pag-save ng status, i-save rin sa Payment table
+    Payment::create([
+        'username'      => $order->username,
+        'product_Name'  => $order->product_Name,
+        'quantity'      => $order->quantity,
+        'price'         => $order->price,
+        'purchase_date' => now(), // Itinatala ang kasalukuyang date/time ng purchase
+    ]);
+
+    // I-redirect pabalik sa pending orders na may success message
+    return redirect()->back()->with('message', 'Order placed and saved to payment successfully!');
+}
 
 
 

@@ -1,7 +1,7 @@
 @extends('components.layoutDash')
 
 @section('dash')
-<div class="p-4 sm:p-6 bg-[#caf0f8] min-h-screen">
+<div class="p-4 sm:p-6 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
     <div class="bg-white rounded-lg shadow-xl overflow-hidden">
         <div class="p-4 sm:p-6 bg-gradient-to-r from-[#03045e] to-[#0077b6]">
             <h1 class="text-xl sm:text-2xl font-bold text-white">Customer List</h1>

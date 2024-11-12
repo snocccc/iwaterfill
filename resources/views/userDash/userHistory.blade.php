@@ -1,7 +1,7 @@
 @extends('components.layoutUser')
 
 @section('userDash')
-<div class="bg-[#caf0f8] min-h-screen py-8">
+<div class="bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen py-8">
     <div class="container mx-auto px-4">
         <div class="flex items-center gap-2 mb-6">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#03045e]">

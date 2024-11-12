@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SalesController;
 use Illuminate\Support\Facades\Route;
 
 // Guest Routes (for users who are not authenticated)
@@ -65,7 +66,7 @@ Route::middleware('auth')->group(function() {
        // Orders
        Route::get('/orders/pending', [OrderController::class, 'pendingOrders'])->name('order');
        Route::post('/orders/place', [OrderController::class, 'placeOrder'])->name('placeOrder');
-
+    //    Route::get('/test-sales-summary', [SalesController::class, 'updateSalesSummary']);
 
 
 
@@ -83,6 +84,9 @@ Route::middleware('auth')->group(function() {
        Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
        // Containers Management
        Route::get('/container', [ProductController::class, 'showContainers'])->name('container');
+       // Route para sa pag-edit ng stock ng produkto
+       Route::post('/update-product-stock', [ProductController::class, 'updateStock'])->name('updateProducts');
+
        Route::post('/borrow-container', [ProductController::class, 'borrowContainer'])->name('borrowContainer');
        Route::post('/return-container', [ProductController::class, 'returnContainer'])->name('returnContainer');
         // Logout
