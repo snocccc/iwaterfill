@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Historical;
 use App\Models\Payment;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
@@ -22,41 +24,102 @@ class PaymentController extends Controller
     /**
      * Handle the form submission and save the payment.
      */
-    public function buy(Request $request)
-    {
-        // Validate the incoming request data
-        $validated = $request->validate([
-            'username'     => 'required|string|max:255',
-            'product_id'   => 'required|exists:products,id',
-            'quantity'     => 'required|integer|min:1',
-        ]);
+    // Buy method remains the same
+public function buy(Request $request)
+{
+    // Validate the incoming request data
+    $validated = $request->validate([
+        'username'   => 'required|string|max:255',
+        'product_id' => 'required|exists:products,id',
+        'quantity'   => 'required|integer|min:1',
+    ]);
 
-        // Retrieve the product based on product_id
-        $product = Product::findOrFail($validated['product_id']);
+    // Retrieve the product based on product_id
+    $product = Product::findOrFail($validated['product_id']);
 
-        // Compute the total price
-        $totalPrice = $product->price * $validated['quantity'];
+    // Compute the total price
+    $totalPrice = $product->price * $validated['quantity'];
 
-        // Ensure stock availability
-        if ($validated['quantity'] > $product->stock) {
-            return redirect()->route('purchase')->with('error', 'Insufficient stock for this product.');
-        }
-
-        // Create a new Payment record
-        Payment::create([
-            'username'     => $validated['username'],
-            'product_Name' => $product->product_Name,
-            'quantity'     => $validated['quantity'],
-            'price'        => $totalPrice,
-            'purchase_date' => now(),  // Save the current timestamp
-        ]);
-
-        // Update product stock
-        $product->decrement('stock', $validated['quantity']);
-
-        // Redirect with a success message
-        return redirect()->route('purchase')->with('success', 'Purchase completed successfully.');
+    // Ensure stock availability
+    if ($validated['quantity'] > $product->stock) {
+        return redirect()->route('purchase')->with('error', 'Insufficient stock for this product.');
     }
+
+    // Call the private function to handle daily and weekly sales logic
+    $this->recordDailySales();
+
+    // Create a new Payment record
+    Payment::create([
+        'username'      => $validated['username'],
+        'product_Name'  => $product->product_Name,
+        'quantity'      => $validated['quantity'],
+        'price'         => $totalPrice,
+        'purchase_date' => now(),
+    ]);
+
+    // Update product stock
+    $product->decrement('stock', $validated['quantity']);
+
+    // Redirect with a success message
+    return redirect()->route('purchase')->with('success', 'Purchase completed successfully.');
+}
+
+// Private function to record daily and weekly sales
+private function recordDailySales()
+{
+    $yesterday = now()->subDay()->toDateString();
+    $existingHistorical = Historical::whereDate('start_date', $yesterday)->where('period_type', 'daily')->first();
+
+    if (!$existingHistorical) {
+        // Calculate total sales for yesterday
+        $yesterdaySales = Payment::whereDate('purchase_date', $yesterday)->sum('price');
+
+        // Insert a new record in the historical table for daily sales
+        Historical::create([
+            'period_type' => 'daily',
+            'start_date'  => $yesterday,
+            'end_date'    => $yesterday,
+            'total_sales' => $yesterdaySales,
+        ]);
+    }
+
+    // Check if there are 7 daily sales records
+    $dailySalesRecords = Historical::where('period_type', 'daily')->orderBy('start_date', 'asc')->take(7)->get();
+
+    if ($dailySalesRecords->count() == 7) {
+        // Calculate total sales for the week
+        $weeklySalesTotal = $dailySalesRecords->sum('total_sales');
+        $weekStartDate = $dailySalesRecords->first()->start_date;
+        $weekEndDate = $dailySalesRecords->last()->start_date;
+
+        // Insert a new record in the historical table for weekly sales
+        Historical::create([
+            'period_type' => 'weekly',
+            'start_date'  => $weekStartDate,
+            'end_date'    => $weekEndDate,
+            'total_sales' => $weeklySalesTotal,
+        ]);
+
+        // // Delete the 7 daily records that have been summed up into weekly sales
+        // Historical::whereIn('id', $dailySalesRecords->pluck('id'))->delete();
+    }
+
+    // Check if there are 7 daily sales records
+    $dailySalesRecords = Historical::where('period_type', 'daily')->orderBy('start_date', 'asc')->take(30)->get();
+
+    if ($dailySalesRecords->count() ==30) {
+        $monthlySalesTotal = $dailySalesRecords->sum('total_sales');
+        $monthStartDate = $dailySalesRecords->first()->start_date;
+        $monthEndDate = $dailySalesRecords->last()->start_date;
+
+        Historical::create([
+            'period_type' => 'monthly',
+            'start_date'  => $monthStartDate,
+            'end_date'    => $monthEndDate,
+            'total_sales' => $monthlySalesTotal,
+        ]);
+    }
+}
 
     public function adminHistory(Request $request)
    {

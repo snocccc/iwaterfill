@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Payment;
 use Carbon\Carbon;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller

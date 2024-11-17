@@ -59,6 +59,7 @@ Route::middleware('auth')->group(function() {
     Route::middleware(['role:admin'])->group(function () {
 
         Route::get('/admin/dashboard', [DashController::class, 'salesChart'])->name('dashboard');
+        Route::post('/admin/dashboard', [DashController::class, 'testHistoricalData'])->name('addd');
 
         // Payments and Purchase
        Route::get('/AddPurchase', [PaymentController::class, 'purchase'])->name('purchase');

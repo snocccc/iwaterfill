@@ -18,7 +18,8 @@
                 </button>
             </div>
 
-            <div class="overflow-x-auto bg-white rounded-lg shadow">
+            <!-- Desktop View (table) - Hidden on mobile -->
+            <div class="hidden md:block overflow-x-auto bg-white rounded-lg shadow">
                 <table class="min-w-full divide-y divide-gray-200 text-sm">
                     <thead>
                         <tr class="bg-gray-50">
@@ -50,8 +51,40 @@
                 </table>
             </div>
 
+            <!-- Mobile View (cards) - Shown only on mobile -->
+            <div class="md:hidden space-y-4">
+                @foreach($users as $user)
+                <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-medium text-gray-900">{{ $user->username }}</h3>
+                        <div class="flex space-x-2">
+                            <button class="text-[#0077b6] hover:text-[#00b4d8] transition duration-300">
+                                <i class="ri-edit-line"></i>
+                            </button>
+                            <button class="text-red-600 hover:text-red-800 transition duration-300">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="space-y-1 text-sm">
+                        <p class="flex items-center text-gray-500">
+                            <i class="ri-mail-line mr-2"></i>
+                            {{ $user->email }}
+                        </p>
+                        <p class="flex items-center text-gray-500">
+                            <i class="ri-map-pin-line mr-2"></i>
+                            {{ $user->location }}
+                        </p>
+                        <p class="flex items-center text-gray-500">
+                            <i class="ri-phone-line mr-2"></i>
+                            {{ $user->phone }}
+                        </p>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+
             <div class="mt-4 flex justify-center">
-                <!-- Pagination component here -->
                 <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                     <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                         <span class="sr-only">Previous</span>
@@ -69,8 +102,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    // Additional JavaScript can be added here
-</script>
 @endsection

@@ -11,9 +11,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <title>Admin</title>
 
     <style>
@@ -27,12 +24,30 @@
 
         body {
             background-color: var(--color-pale-blue);
+            height: 100vh;
+            overflow: hidden;
         }
 
         .sidebar {
             background-color: var(--color-dark-blue);
             transition: transform 0.3s ease;
             z-index: 60;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            position: sticky;
+            top: 0;
+            background-color: var(--color-dark-blue);
+            z-index: 61;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
         }
 
         @media (max-width: 768px) {
@@ -56,11 +71,13 @@
         .sidebar a.active {
             background-color: var(--color-light-blue);
             color: var(--color-dark-blue);
-            pointer-events: none; /* Huwag payagan ang pag-click */
+            pointer-events: none;
         }
 
         .main-content {
             background: linear-gradient(to right, var(--color-very-light-blue), var(--color-pale-blue));
+            overflow-y: auto;
+            height: 100vh;
         }
 
         .header {
@@ -93,12 +110,18 @@
             opacity: 1;
             pointer-events: auto;
         }
+
+        .logout-container {
+            position: sticky;
+            bottom: 0;
+            background-color: var(--color-dark-blue);
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
 <body class="font-mont">
-
-    <div class="flex flex-col lg:flex-row lg:min-h-screen">
-
+    <div class="flex flex-col lg:flex-row h-screen">
         <div class="p-4 bg-blue-600 text-white flex justify-between lg:hidden">
             <h1 class="text-2xl font-bold">iWaterFill</h1>
             <button id="menuButton" class="text-3xl">
@@ -108,15 +131,18 @@
 
         <div id="sidebar-overlay" class="sidebar-overlay lg:hidden"></div>
 
-        <div id="sidebar" class="sidebar fixed inset-y-0 left-0 w-64 lg:relative lg:flex lg:flex-col lg:shadow-md lg:overflow-y-auto">
-            <div class="flex items-center justify-between p-4">
-                <h1 class="text-white font-bold text-xl">iWaterFill</h1>
-                <button id="closeSidebarButton" class="text-white text-2xl lg:hidden">
-                    <i class="ri-close-line"></i>
-                </button>
+        <div id="sidebar" class="sidebar fixed inset-y-0 left-0 w-64 lg:relative">
+            <div class="sidebar-header">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-white font-bold text-xl">iWaterFill</h1>
+                    <button id="closeSidebarButton" class="text-white text-2xl lg:hidden">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
             </div>
-            <div class="flex flex-col p-4 h-full">
-                <nav class="space-y-2">
+
+            <div class="sidebar-content">
+                <nav class="p-4 space-y-2">
                     <a href="{{ route('dashboard') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                         <i class="ri-home-8-line mr-3"></i> Dashboard
                     </a>
@@ -132,27 +158,26 @@
                     <a href="{{ route('customerList') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('customerList') ? 'active' : '' }}">
                         <i class="ri-user-line mr-3"></i> Customer List
                     </a>
-
-                    {{-- <a href="{{ route('addProduct') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('addProduct') ? 'active' : '' }}">
-                        <i class="ri-add-box-line mr-3"></i> Add Product
-                    </a> --}}
                     <a href="{{ route('history') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('history') ? 'active' : '' }}">
                         <i class="ri-time-line mr-3"></i> Transaction History
                     </a>
-                    <div class="mt-auto pt-4 border-t border-gray-200">
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="flex items-center w-full p-3 text-gray-200 text-base rounded-lg hover:bg-red-600 transition-colors duration-300">
-                                <i class="ri-logout-box-line mr-3"></i>
-                                <span>Logout</span>
-                            </button>
-                        </form>
-                    </div>
                 </nav>
+            </div>
+
+            <div class="logout-container">
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="flex items-center w-full p-3 text-gray-200 text-base rounded-lg hover:bg-red-600 transition-colors duration-300">
+                        <i class="ri-logout-box-line mr-3"></i>
+                        <span>Logout</span>
+                    </button>
+                </form>
             </div>
         </div>
 
-        <main class="flex-1 min-h-screen main-content">
+
+
+        <main class="flex-1 main-content">
             @yield('dash')
         </main>
     </div>
@@ -178,6 +203,5 @@
             sidebarOverlay.classList.remove('show');
         });
     </script>
-
 </body>
 </html>

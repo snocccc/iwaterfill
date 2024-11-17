@@ -50,6 +50,12 @@
                                class="w-full border-2 border-[#90e0ef] rounded-md py-2 px-3 focus:outline-none focus:ring-[#00b4d8] focus:border-[#00b4d8] transition duration-300"
                                oninput="updateTotalPrice('{{ $product->id }}', {{ $product->price }})">
 
+                        {{-- <!-- Date of Purchase Input -->
+                        <label for="purchase-date-{{ $product->id }}" class="block text-sm font-medium text-[#03045e] mt-4">Date of Purchase</label>
+                        <input type="date" id="purchase-date-{{ $product->id }}" name="purchase_date"
+                               class="w-full border-2 border-[#90e0ef] rounded-md py-2 px-3 focus:outline-none focus:ring-[#00b4d8] focus:border-[#00b4d8] transition duration-300"
+                               required> --}}
+
                         <p class="mt-2">Total Price: ₱<span id="total-price-{{ $product->id }}">0.00</span></p>
 
                         <button type="submit"
@@ -57,6 +63,7 @@
                             Checkout
                         </button>
                     </form>
+
                 </div>
                 @endforeach
             </div>
