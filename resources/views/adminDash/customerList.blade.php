@@ -1,5 +1,5 @@
 @extends('components.layoutDash')
-
+@section('title', 'Customer List')
 @section('dash')
 <div class="p-4 sm:p-6 bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen">
     <div class="bg-white rounded-lg shadow-xl overflow-hidden">
@@ -7,16 +7,6 @@
             <h1 class="text-xl sm:text-2xl font-bold text-white">Customer List</h1>
         </div>
 
-        <div class="p-4 sm:p-6">
-            <div class="mb-4 flex flex-col sm:flex-row justify-between items-center">
-                <div class="relative w-full sm:w-auto mb-2 sm:mb-0">
-                    <input type="text" placeholder="Search customers..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00b4d8] w-full">
-                    <i class="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
-                <button class="bg-[#00b4d8] text-white px-4 py-2 rounded-lg hover:bg-[#0077b6] transition duration-300 flex items-center">
-                    <i class="ri-add-line mr-2"></i> Add Customer
-                </button>
-            </div>
 
             <!-- Desktop View (table) - Hidden on mobile -->
             <div class="hidden md:block overflow-x-auto bg-white rounded-lg shadow">

@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
@@ -17,8 +18,8 @@ class UserController extends Controller
             'username' => ['required', 'max:50'],
             'email' => ['required', 'max:50', 'email', 'unique:users,email'],
             'location' => ['required', 'max:50'],
-            'phone' => ['required'],
-            'password' => ['required', 'confirmed']
+            'phone' => ['required', 'min:11'],
+            'password' => ['required', 'min:6', 'confirmed']
         ]);
 
         //Register the user
@@ -56,19 +57,51 @@ class UserController extends Controller
 }
 
 
-        public function logout(Request $request) {
-            // Log the user out
-            Auth::logout();
+public function logout(Request $request)
+{
+    // Log the user out
+    Auth::logout();
 
-            // Invalidate the session
-            $request->session()->invalidate();
+    // Invalidate the session
+    $request->session()->invalidate();
 
-            // Regenerate the CSRF token
-            $request->session()->regenerateToken();
+    // Regenerate the CSRF token
+    $request->session()->regenerateToken();
 
-            // Redirect to login page
-            return redirect('/');
-        }
+    // Set headers to prevent caching
+    return redirect('/login')->withHeaders([
+        'Cache-Control' => 'no-cache, no-store, must-revalidate, max-age=0',
+        'Pragma' => 'no-cache',
+        'Expires' => '0',
+    ]);
+}
+
+public function storeBackupAccount(Request $request)
+{
+    // Validate the input
+    $validatedData = $request->validate([
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|confirmed',
+        'username' => 'required|string|max:255',
+        'location' => 'required|string|max:255',
+        'phone' => 'required|string|max:20',
+    ]);
+
+    // Create the new admin account
+    User::create([
+        'email' => $validatedData['email'],
+        'password' => Hash::make($validatedData['password']),
+        'role' => 'admin',
+        'username' => $validatedData['username'],
+        'location' => $validatedData['location'],
+        'phone' => $validatedData['phone'],
+    ]);
+
+    // Redirect back with success message
+    return redirect()->back()->with('success', 'Backup account added successfully.');
+}
+
+
 
 
 

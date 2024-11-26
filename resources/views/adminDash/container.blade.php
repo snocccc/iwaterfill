@@ -1,4 +1,5 @@
 @extends('components.layoutDash')
+@section('title', 'Admin Inventory')
 @section('dash')
 <section class="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 p-6">
     <div class="max-w-7xl mx-auto">

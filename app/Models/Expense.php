@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Historical extends Model
+class Expense extends Model
 {
     use HasFactory;
     protected $fillable = [
         'period_type',
+        'description',
+        'amount',
         'start_date',
         'end_date',
-        'total_sales',
-        'is_processed',
     ];
 }

@@ -1,5 +1,7 @@
 @extends('components.layoutUser')
 
+@section('title', 'User Order History')
+
 @section('userDash')
 <div class="bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen py-8">
     <div class="container mx-auto px-4">
@@ -41,6 +43,16 @@
                             <th class="py-3 px-4 text-left font-semibold text-sm md:text-base">
                                 <div class="flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                                    </svg>
+                                    Quantity
+                                </div>
+                            </th>
+                            <th class="py-3 px-4 text-left font-semibold text-sm md:text-base">
+                                <div class="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <circle cx="12" cy="12" r="8"></circle>
                                         <path d="M10 13.2A1 1 0 0 1 11 12v-1a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-1a1 1 0 0 0-1 1v1"></path>
                                         <path d="M12 16h.01"></path>
@@ -62,16 +74,6 @@
                             <th class="py-3 px-4 text-left font-semibold text-sm md:text-base">
                                 <div class="flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                                        <path d="M16 10a4 4 0 0 1-8 0"></path>
-                                    </svg>
-                                    Quantity
-                                </div>
-                            </th>
-                            <th class="py-3 px-4 text-left font-semibold text-sm md:text-base">
-                                <div class="flex items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M20 7h-9"></path>
                                         <path d="M14 17H5"></path>
                                         <circle cx="17" cy="17" r="3"></circle>
@@ -87,9 +89,9 @@
                         <tr class="border-b border-[#90e0ef] hover:bg-[#e6f8fc] transition duration-300">
                             <td class="py-3 px-4 text-sm md:text-base">{{ $order->product_Name }}</td>
                             <td class="py-3 px-4 text-sm md:text-base">{{ $order->username }}</td>
+                            <td class="py-3 px-4 text-sm md:text-base">{{ $order->quantity }}</td>
                             <td class="py-3 px-4 text-sm md:text-base font-medium text-[#03045e]">₱{{ number_format($order->price, 2) }}</td>
                             <td class="py-3 px-4 text-sm md:text-base">{{ \Carbon\Carbon::parse($order->purchase_date)->format('F d, Y') }}</td>
-                            <td class="py-3 px-4 text-sm md:text-base">{{ $order->quantity }}</td>
                             <td class="py-3 px-4 text-sm md:text-base">
                                 <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium {{ $order->status ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -138,20 +140,20 @@
                         </p>
                         <p class="flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <path d="M16 10a4 4 0 0 1-8 0"></path>
+                            </svg>
+                            Quantity: {{ $order->quantity }}
+                        </p>
+                        <p class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                                 <line x1="16" y1="2" x2="16" y2="6"></line>
                                 <line x1="8" y1="2" x2="8" y2="6"></line>
                                 <line x1="3" y1="10" x2="21" y2="10"></line>
                             </svg>
                             Purchase Date: {{ \Carbon\Carbon::parse($order->purchase_date)->format('F d, Y') }}
-                        </p>
-                        <p class="flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                                <line x1="3" y1="6" x2="21" y2="6"></line>
-                                <path d="M16 10a4 4 0 0 1-8 0"></path>
-                            </svg>
-                            Quantity: {{ $order->quantity }}
                         </p>
                         <div class="flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

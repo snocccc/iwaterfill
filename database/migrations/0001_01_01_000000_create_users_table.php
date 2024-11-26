@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('role')->default('user');
             $table->string('location');
-            $table->integer('phone');
+            $table->string('phone');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
@@ -43,10 +43,10 @@ return new class extends Migration
         DB::table('users')->insert([
             [
                 'username' => 'admin',
-                'email' => 'admin@gmail.com',
-                'location' => 'Admin Location', // Add a valid location
+                'email' => 'aco.southwestluzon@gmail.com',
+                'location' => 'Villa Crisanta Subdivision', // Add a valid location
                 'role' => 'admin',
-                'phone' => 1234567890, // Add a valid phone number
+                'phone' => '09567523649', // Add a valid phone number
                 'password' => Hash::make('a'),
                 'created_at' => now(),
                 'updated_at' => now(),

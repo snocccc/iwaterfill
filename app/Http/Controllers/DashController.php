@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Expense;
+use App\Models\Expense_sums;
 use App\Models\Historical;
 use App\Models\User;
 use App\Models\Payment;
@@ -9,7 +11,7 @@ use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon; // Import Carbon for date handling
+use Carbon\Carbon;
 use Illuminate\Routing\Controller;
 use Phpml\Regression\LeastSquares;
 
@@ -23,14 +25,6 @@ class DashController extends Controller
         return view('adminDash.dashboard');
     }
 
-    public function dashboard() {
-        $pendingOrdersCount = Order::where('status', 'pending')->count();
-        return view('components.layoutDash', compact('pendingOrdersCount'));
-    }
-
-
-//
-
     public function customerList()
     {
         // Retrieve all users from the database
@@ -40,6 +34,204 @@ class DashController extends Controller
         return view('adminDash.customerList', ['users' => $users]);
     }
 
+
+    // Method para mag-update ng expense
+public function updateExpense(Request $request)
+{
+    $request->validate([
+        'amount' => 'required|numeric|min:0',
+        'description' => 'required|string|max:255',
+    ]);
+
+    // Insert a new expense record sa database
+    Expense::create([
+        'period_type' => 'monthly', // Maaari mong baguhin ito depende sa kailangan mo (e.g., 'daily', 'weekly', 'monthly')
+        'description' => $request->input('description'),
+        'amount' => $request->input('amount'),
+        'start_date' => Carbon::today()->toDateString(),
+        'end_date' => Carbon::today()->toDateString(),
+    ]);
+
+    return redirect()->back()->with('success', 'Expense updated successfully.');
+}
+
+
+public function finalizeExpenses()
+{
+ // Tawagin ang mergeDuplicateExpenses para tanggalin ang duplicate
+ $this->mergeDuplicateExpenses();
+
+    // Kunin ang total ng expenses para sa kasalukuyang araw
+    $totalExpensesToday = Expense::whereDate('created_at', Carbon::today())->sum('amount');
+
+    if ($totalExpensesToday == 0) {
+        return redirect()->back()->with('info', 'Walang expenses na naitala ngayong araw.');
+    }
+
+    // I-save ang total na ito sa database bilang isang summary record
+    DB::table('expense_sums')->insert([
+        'period_type' => 'daily',
+        'amount' => $totalExpensesToday,
+        'start_date' => Carbon::today()->toDateString(),
+        'end_date' => Carbon::today()->toDateString(),
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    // I-delete ang mga individual expenses na kasama sa total
+    Expense::whereDate('created_at', Carbon::today())->delete();
+
+    // Check kung umabot na ng 30 records ang mga daily summaries
+    $dailySummariesCount = DB::table('expense_sums')
+        ->where('period_type', 'daily')
+        ->count();
+
+        if ($dailySummariesCount > 0) {
+            // Kunin ang unang record ng daily data
+            $firstDaily = DB::table('expense_sums')
+                ->where('period_type', 'daily')
+                ->orderBy('start_date', 'asc')
+                ->first();
+
+            // Kunin ang pinakahuling record ng daily data
+            $lastDaily = DB::table('expense_sums')
+                ->where('period_type', 'daily')
+                ->orderBy('start_date', 'desc')
+                ->first();
+
+            // Check kung magkaiba na ang buwan ng start_date ng una at huling daily record
+            if (Carbon::parse($firstDaily->start_date)->format('Y-m') !== Carbon::parse($lastDaily->start_date)->format('Y-m')) {
+                // Kunin ang lahat ng daily summaries
+                $expenseSums = DB::table('expense_sums')
+                    ->where('period_type', 'daily')
+                    ->orderBy('start_date', 'asc')
+                    ->get();
+
+                // I-compute ang total amount ng daily summaries
+                $totalMonthly = $expenseSums->sum('amount');
+                $startDate = $expenseSums->first()->start_date;
+                $endDate = $expenseSums->last()->end_date;
+
+                // I-save ito bilang isang monthly summary
+                DB::table('expense_sums')->insert([
+                    'period_type' => 'monthly',
+                    'amount' => $totalMonthly,
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                // Burahin ang lahat ng daily summaries na naisama na sa monthly summary
+                DB::table('expense_sums')
+                    ->where('period_type', 'daily')
+                    ->delete();
+            }
+        }
+
+        // Tawagin ang computeProfit function para makuha ang profit
+        $profit = $this->computeProfit();
+
+        return redirect()->back()->with('success', 'Expenses finalized and summarized successfully.');
+
+}
+
+// Private function para sa pag-compute ng profit
+private function computeProfit()
+{
+    // Hanapin ang huling monthly expense summary mula sa `expense_sums`
+    $latestMonthlyExpense = DB::table('expense_sums')
+        ->where('period_type', 'monthly')
+        ->orderBy('start_date', 'desc')
+        ->first();
+
+    if (!$latestMonthlyExpense) {
+        return 0; // Walang expenses, walang profit computation
+    }
+
+    // Kunin ang `start_date` at `end_date` ng huling monthly expense summary
+    $startDate = $latestMonthlyExpense->start_date;
+    $endDate = $latestMonthlyExpense->end_date;
+
+    // Kunin ang total expenses para sa period na ito
+    $monthlyExpenses = $latestMonthlyExpense->amount;
+
+    // Kunin ang total sales para sa parehong period mula sa `historicals` table
+    $monthlySales = DB::table('historicals')
+        ->where('period_type', 'monthly')
+        ->whereDate('start_date', $startDate)
+        ->whereDate('end_date', $endDate)
+        ->sum('total_sales');
+
+    // I-compute ang profit
+    $profit = $monthlySales - $monthlyExpenses;
+
+    // Hanapin kung meron nang na-save na profit para sa parehong period
+    $existingProfit = DB::table('profits')
+        ->where('period_type', 'monthly')
+        ->whereDate('start_date', $startDate)
+        ->whereDate('end_date', $endDate)
+        ->first();
+
+    if (!$existingProfit) {
+        // I-save ang computed profit sa `profits` table
+        DB::table('profits')->insert([
+            'period_type' => 'monthly',
+            'amount' => $profit,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    } else {
+        // I-update ang existing profit kung may bagong computation
+        DB::table('profits')
+            ->where('id', $existingProfit->id)
+            ->update([
+                'amount' => $profit,
+                'updated_at' => now(),
+            ]);
+    }
+
+    // Ibalik ang computed profit
+    return $profit;
+}
+
+// Private function para pagsamahin ang mga duplicate na expenses
+private function mergeDuplicateExpenses()
+{
+    // Kunin ang lahat ng records na naka-group ayon sa `start_date` at `end_date`
+    $duplicates = DB::table('expense_sums')
+        ->select('start_date', 'end_date', DB::raw('SUM(amount) as total_amount'), DB::raw('COUNT(id) as record_count'))
+        ->groupBy('start_date', 'end_date')
+        ->having('record_count', '>', 1)
+        ->get();
+
+    // I-loop ang bawat grupo ng duplicate records
+    foreach ($duplicates as $duplicate) {
+        // Kunin ang total amount para sa parehong dates
+        $totalAmount = $duplicate->total_amount;
+        $startDate = $duplicate->start_date;
+        $endDate = $duplicate->end_date;
+
+        // I-delete ang lahat ng records na may parehong `start_date` at `end_date`
+        DB::table('expense_sums')
+            ->where('start_date', $startDate)
+            ->where('end_date', $endDate)
+            ->delete();
+
+        // Mag-insert ng isang record na may total amount
+        DB::table('expense_sums')->insert([
+            'period_type' => 'daily', // O 'monthly' kung applicable
+            'amount' => $totalAmount,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+}
+
     /**
      * Get sales data for the chart based on the selected period.
      */
@@ -48,101 +240,209 @@ class DashController extends Controller
         // Set the default period to 'monthly'
         $period = $request->input('period', 'monthly');
 
+        // Kunin ang historical sales data mula sa Historical table
+        $actualSales = Historical::where('period_type', 'monthly')
+            ->orderBy('start_date', 'asc')
+            ->get(['start_date', 'total_sales'])
+            ->map(function ($data) {
+                return [
+                    'month' => \Carbon\Carbon::parse($data->start_date)->format('Y-m'),
+                    'sales' => (float) $data->total_sales
+                ];
+            });
 
-        // Kunin ang sales data depende sa period
-        $salesData = [];
+        // Kunin ang predicted sales gamit ang private function
+$predictedSalesData = $this->getMonthlySalesDataForPrediction();
 
-        switch ($period) {
-            case 'weekly':
-                $salesData = Payment::where('purchase_date', '>=', now()->subWeeks(1))
-                    ->selectRaw('DATE(purchase_date) as date, SUM(price) as total_sales')
-                    ->groupBy('date')
-                    ->orderBy('date')
-                    ->get()
-                    ->toArray();
-                break;
+// Pag-format ng predicted sales data
+$predictedSales = [];
+$startMonth = \Carbon\Carbon::now()->startOfMonth();
 
-            case 'monthly':
-                $salesData = Payment::where('purchase_date', '>=', now()->subMonths(1))
-                    ->selectRaw('DATE(purchase_date) as date, SUM(price) as total_sales')
-                    ->groupBy('date')
-                    ->orderBy('date')
-                    ->get()
-                    ->toArray();
-                break;
+// Mag-check muna kung may laman ang $predictedSalesData
+if (!empty($predictedSalesData) && is_array($predictedSalesData)) {
+    for ($i = 0; $i < count($predictedSalesData); $i++) {
+        $predictedSales[] = [
+            'month' => $startMonth->addMonth()->format('Y-m'),
+            'sales' => isset($predictedSalesData[$i]) ? $predictedSalesData[$i] : 0 // Default sa 0 kung wala
+        ];
+    }
+} else {
+    // Kapag walang laman, lagyan ng default na mensahe o 0 data
+    for ($i = 0; $i < 12; $i++) {
+        $predictedSales[] = [
+            'month' => $startMonth->addMonth()->format('Y-m'),
+            'sales' => 0 // Default value kapag walang data
+        ];
+    }
+}
 
-            case 'yearly':
-                $salesData = Payment::where('purchase_date', '>=', now()->subYears(1))
-                    ->selectRaw('DATE(purchase_date) as date, SUM(price) as total_sales')
-                    ->groupBy('date')
-                    ->orderBy('date')
-                    ->get()
-                    ->toArray();
-                break;
 
-            default:
-                break;
-        }
-
-        // logger()->info('Sales Data:', $salesData);
-
-       // Kunin ang chart data (actual and predicted sales)
-    $chartData = $this->getChartDataForPrediction();
-
-        // Prepare other data for the view
+ // Get all orders where the status is 0 (pending orders)
+ $pendingOrders = Order::where('status', 0)->count();
+        // Ihanda ang iba pang data para sa view
         $products = Product::all();
         $stocks = $products->pluck('stock', 'product_Name');
+
+         // Kunin ang kabuuang halaga ng expenses ngayon
+         $totalExpensesToday = Expense::whereDate('created_at', Carbon::today())->sum('amount');
+         $totalExpenses = Expense::sum('amount');
+         $totalExpenses = Expense_sums::where('period_type', 'monthly')->avg('amount');
+
+        $this->recordDailySales();
+         // Tawagin ang computeProfit function para makuha ang profit
+         $profit = $this->computeProfit();
 
         $totalSalesToday = Payment::whereDate('purchase_date', Carbon::today())->sum('price');
         $totalSales = Payment::sum('price');
 
         $averageDailySales = Historical::where('period_type', 'daily')->avg('total_sales');
-        $averageWeeklySales = Historical::where('period_type', 'weekly')->avg('total_sales');
         $averageMonthlySales = Historical::where('period_type', 'monthly')->avg('total_sales');
 
-        return view('adminDash.dashboard', compact('stocks', 'totalSalesToday', 'totalSales', 'salesData', 'period', 'averageDailySales', 'averageWeeklySales', 'averageMonthlySales', 'chartData'));
+        // Check kung may laman ang data
+        $hasData = !$actualSales->isEmpty() || !empty($predictedSalesData);
+
+        $customerLocations = User::select('location', DB::raw('count(*) as count'))
+    ->where('role', 'user') // I-filter ang mga may role na 'user' lamang
+    ->groupBy('location')
+    ->orderByDesc('count')
+    ->get();
+
+         // I-format ang data para sa chart
+        $locationLabels = $customerLocations->pluck('location');
+        $locationCounts = $customerLocations->pluck('count');
+
+        return view('adminDash.dashboard', compact(
+            'stocks',
+            'totalSalesToday',
+            'totalSales',
+            'period',
+            'profit',
+            'pendingOrders',
+            'totalExpensesToday',
+            'totalExpenses',
+            'averageDailySales',
+            'averageMonthlySales',
+            'actualSales',
+            'predictedSales',
+            'hasData',
+            'locationLabels', // Idagdag ang labels ng location
+            'locationCounts',// Flag na magsasabi kung may data o wala
+        ));
     }
 
 
 
+    private function recordDailySales()
+{
+    $yesterday = now()->subDay()->toDateString();
+    $existingHistorical = Historical::whereDate('start_date', $yesterday)->where('period_type', 'daily')->first();
 
+    if (!$existingHistorical) {
+        // Calculate total sales for yesterday
+        $yesterdaySales = Payment::whereDate('purchase_date', $yesterday)->sum('price');
 
-    // Private function para kumuha ng weekly sales data at i-predict gamit ang Least Squares (Linear Regression)
-    private function getWeeklySalesDataForPrediction()
-    {
-        // Kunin ang historical sales data mula sa Historical table
-        $salesData = Historical::where('period_type', 'weekly')
-            ->orderBy('start_date', 'asc')
-            ->get(['start_date', 'total_sales']);
-
-        // I-prepare ang data para sa machine learning
-        $samples = [];
-        $targets = [];
-
-        foreach ($salesData as $data) {
-            $weekNumber = \Carbon\Carbon::parse($data->start_date)->week();
-            $samples[] = [$weekNumber];
-            $targets[] = (float) $data->total_sales;
-        }
-
-        if (empty($samples)) {
-            return ['error' => 'No sales data available for prediction.'];
-        }
-
-        // Train the linear regression model
-        $regressor = new LeastSquares();
-        $regressor->train($samples, $targets);
-
-        // Pag-predict ng sales para sa susunod na tatlong hanggang anim na buwan (approx. 12 to 24 weeks)
-        $predictedSales = [];
-        $currentWeek = \Carbon\Carbon::now()->week();
-
-        for ($i = 1; $i <= 24; $i++) {  // Mag-predict for 24 weeks (6 months)
-            $predictedSales[] = max(0, $regressor->predict([$currentWeek + $i]));
-        }
-
-        return $predictedSales;
+        // Insert a new record in the historical table for daily sales
+        Historical::create([
+            'period_type' => 'daily',
+            'start_date'  => $yesterday,
+            'end_date'    => $yesterday,
+            'total_sales' => $yesterdaySales,
+            'is_processed' => false, // Default to false
+        ]);
     }
+
+    // Get the first 30 unprocessed daily records
+    $dailySalesRecords = Historical::where('period_type', 'daily')->where('is_processed', false)
+        ->orderBy('start_date', 'asc')->take(30)->get();
+
+    // Check if we have exactly 30 records for processing
+    if ($dailySalesRecords->count() == 30) {
+        $monthlySalesTotal = $dailySalesRecords->sum('total_sales');
+        $monthStartDate = $dailySalesRecords->first()->start_date;
+        $monthEndDate = $dailySalesRecords->last()->start_date;
+
+        // Create a new monthly record
+        Historical::create([
+            'period_type' => 'monthly',
+            'start_date'  => $monthStartDate,
+            'end_date'    => $monthEndDate,
+            'total_sales' => $monthlySalesTotal,
+        ]);
+
+        // Mark these 30 records as processed
+        $dailySalesRecords->each(function ($record) {
+            $record->update(['is_processed' => true]);
+        });
+    }
+}
+
+
+public function adminHistory(Request $request)
+{
+    // Kunin ang napiling petsa mula sa request
+    $date = $request->input('date');
+
+    // Kunin ang mga payment records na tugma sa napiling petsa
+    $payments = Payment::when($date, function($query, $date) {
+        return $query->whereDate('purchase_date', $date);
+    })->get();
+
+    // Kunin lamang ang mga order records na may status = 1 at tugma sa napiling petsa
+    $orders = Order::when($date, function($query, $date) {
+        return $query->whereDate('purchase_date', $date);
+    })->where('status', 1)->get();
+
+    // Ibalik ang view kasama ang parehong payments at orders
+    return view('adminDash.history', compact('payments', 'orders'));
+}
+
+   private function getMonthlySalesDataForPrediction()
+   {
+       // Kunin ang historical sales data mula sa Historical table
+       $salesData = Historical::where('period_type', 'monthly')
+           ->orderBy('start_date', 'asc')
+           ->distinct('start_date')
+           ->get(['start_date', 'total_sales']);
+
+       // I-prepare ang data para sa machine learning
+       $samples = [];
+       $targets = [];
+
+       foreach ($salesData as $data) {
+           $month = \Carbon\Carbon::parse($data->start_date)->month;
+           $year = \Carbon\Carbon::parse($data->start_date)->year;
+           $samples[] = [$year * 12 + $month]; // Convert year + month to a single value
+           $targets[] = (float) $data->total_sales;
+       }
+
+       if (empty($samples)) {
+           return ['error' => 'No sales data available for prediction.'];
+       }
+
+       // Ensure proper shape of the samples
+       $samples = array_map(function($sample) {
+           return is_array($sample) ? $sample : [$sample];
+       }, $samples);
+
+       // Train the linear regression model
+       try {
+           $regressor = new LeastSquares();
+           $regressor->train($samples, $targets);
+       } catch (\Exception $e) {
+           return ['error' => 'Error in training the model: ' . $e->getMessage()];
+       }
+
+       // Pag-predict ng sales para sa susunod na 12 buwan (1 taon)
+       $predictedSales = [];
+       $currentMonth = (\Carbon\Carbon::now()->year * 12) + \Carbon\Carbon::now()->month;
+
+       for ($i = 1; $i <= 5; $i++) {  // Mag-predict for 12 months
+           $predictedSales[] = max(0, $regressor->predict([$currentMonth + $i]));
+       }
+
+       return $predictedSales;
+   }
+
 
     public function getChartDataForPrediction()
     {
@@ -166,66 +466,6 @@ class DashController extends Controller
 
         return $predictedData;
     }
-
-
-public function testHistoricalData()
-{
-    // Existing and new data points
-    Historical::create(['period_type' => 'weekly', 'start_date' => '2024-10-01', 'end_date' => '2024-10-07', 'total_sales' => 450.00]);
-    Historical::create(['period_type' => 'weekly', 'start_date' => '2024-10-08', 'end_date' => '2024-10-14', 'total_sales' => 470.00]);
-    Historical::create(['period_type' => 'weekly', 'start_date' => '2024-10-15', 'end_date' => '2024-10-21', 'total_sales' => 480.00]);
-    Historical::create(['period_type' => 'weekly', 'start_date' => '2024-10-22', 'end_date' => '2024-10-28', 'total_sales' => 500.00]);
-    Historical::create(['period_type' => 'weekly', 'start_date' => '2024-10-29', 'end_date' => '2024-11-04', 'total_sales' => 520.00]);
-    Historical::create(['period_type' => 'weekly', 'start_date' => '2024-11-05', 'end_date' => '2024-11-11', 'total_sales' => 530.00]);
-    Historical::create(['period_type' => 'weekly', 'start_date' => '2024-11-12', 'end_date' => '2024-11-18', 'total_sales' => 550.00]);
-    Historical::create(['period_type' => 'weekly', 'start_date' => '2024-11-19', 'end_date' => '2024-11-25', 'total_sales' => 570.00]);
-    Historical::create(['period_type' => 'weekly', 'start_date' => '2024-11-26', 'end_date' => '2024-12-02', 'total_sales' => 590.00]);
-    Historical::create(['period_type' => 'weekly', 'start_date' => '2024-12-03', 'end_date' => '2024-12-09', 'total_sales' => 600.00]);
-    Historical::create(['period_type' => 'weekly', 'start_date' => '2024-12-10', 'end_date' => '2024-12-16', 'total_sales' => 620.00]);
-    Historical::create(['period_type' => 'weekly', 'start_date' => '2024-12-17', 'end_date' => '2024-12-23', 'total_sales' => 640.00]);
-    Historical::create(['period_type' => 'weekly', 'start_date' => '2024-12-24', 'end_date' => '2024-12-30', 'total_sales' => 650.00]);
-    Historical::create(['period_type' => 'weekly', 'start_date' => '2024-12-24', 'end_date' => '2024-12-30', 'total_sales' => 100.00]);
-
-    return view('adminDash.purchase'); // Confirm data saving and view your chart
-}
-
-
-
-
-
-
-
-
-
-    // private function leastSquaresPrediction($salesData)
-    // {
-    //     // Gamitin ang PHP ML library para sa linear regression
-    //     $samples = [];
-    //     $targets = [];
-
-    //     // Gawin ang mga samples at targets mula sa iyong sales data
-    //     foreach ($salesData as $key => $data) {
-    //         $samples[] = [$key]; // X axis (index)
-    //         $targets[] = $data['total_sales']; // Y axis (sales)
-    //     }
-
-    //     // Mag-train ng linear regression model
-    //     $regression = new \Phpml\Regression\LeastSquares();
-    //     $regression->train($samples, $targets);
-
-    //     // Predict the next 6 data points
-    //     $predictions = [];
-    //     $lastIndex = count($salesData);
-
-    //     for ($i = 1; $i <= 6; $i++) {
-    //         $predictions[] = $regression->predict([$lastIndex + $i]);
-    //     }
-
-    //     return $predictions;
-    // }
-
-
-
     /**
      * Show other methods if necessary.
      */

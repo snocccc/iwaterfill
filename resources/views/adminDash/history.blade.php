@@ -1,5 +1,5 @@
 @extends('components.layoutDash')
-
+@section('title', 'Transaction History')
 @section('dash')
 <div class="bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,8 +51,21 @@
             </div>
         </div>
 
-        <!-- Responsive Table/Card Section -->
-        <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <!-- Table Type Selector -->
+        <div class="mb-6">
+            <div class="relative">
+                <select
+                    onchange="toggleTableView(this.value)"
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                    <option value="pos">By POS</option>
+                    <option value="online">By Online</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- POS Transactions Table -->
+        <div id="posTable" class="bg-white shadow-sm rounded-lg overflow-hidden">
             <!-- Desktop View -->
             <div class="hidden md:block overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
@@ -90,7 +103,7 @@
                 </table>
             </div>
 
-            <!-- Mobile View -->
+            <!-- Mobile View for POS -->
             <div class="md:hidden">
                 <div class="grid grid-cols-1 gap-4 p-4">
                     @foreach($payments as $payment)
@@ -129,6 +142,111 @@
                 </div>
             </div>
         </div>
+
+        <!-- Online Orders Table -->
+        <div id="onlineTable" class="bg-white shadow-sm rounded-lg overflow-hidden hidden">
+            <!-- Desktop View -->
+            <div class="hidden md:block overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Purchase Date</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach($orders as $order)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $order->username }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $order->product_Name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $order->quantity }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₱{{ number_format($order->price, 2) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $order->location }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ \Carbon\Carbon::parse($order->purchase_date)->format('F d, Y') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <div class="flex gap-4">
+                                    <a href="" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                    <form action="" method="POST" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure?')">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mobile View for Online Orders -->
+            <div class="md:hidden">
+                <div class="grid grid-cols-1 gap-4 p-4">
+                    @foreach($orders as $order)
+                    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-900">{{ $order->product_Name }}</h3>
+                                <p class="text-sm text-gray-500">{{ $order->username }}</p>
+                            </div>
+                            <p class="text-lg font-semibold text-gray-900">₱{{ number_format($order->price, 2) }}</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Quantity</p>
+                                <p class="text-sm font-medium text-gray-900">{{ $order->quantity }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Location</p>
+                                <p class="text-sm font-medium text-gray-900">{{ $order->location }}</p>
+                            </div>
+                            <div class="col-span-2">
+                                <p class="text-sm text-gray-500">Purchase Date</p>
+                                <p class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($order->purchase_date)->format('F d, Y') }}</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-3"><a href="" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-indigo-50 hover:bg-indigo-100">
+                            Edit
+                        </a>
+                        <form action="" method="POST" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-red-600 bg-red-50 hover:bg-red-100" onclick="return confirm('Are you sure?')">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
     </div>
 </div>
+</div>
+
+<script>
+function toggleTableView(value) {
+const posTable = document.getElementById('posTable');
+const onlineTable = document.getElementById('onlineTable');
+
+if (value === 'pos') {
+    posTable.classList.remove('hidden');
+    onlineTable.classList.add('hidden');
+} else {
+    posTable.classList.add('hidden');
+    onlineTable.classList.remove('hidden');
+}
+}
+
+// Initialize the view based on the select value when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+const selectElement = document.querySelector('select');
+toggleTableView(selectElement.value);
+});
+</script>
 @endsection

@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Payment;
-use Carbon\Carbon;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,14 +19,14 @@ class OrderController extends Controller
 
     public function userhistory()
        {
-           // Kunin ang authenticated na user at pangalan niya
-            $username = Auth::user()->username;
+       // Kunin ang authenticated na user ID
+    $userId = Auth::id();
 
-            // Hanapin ang lahat ng transactions na may parehong customer name
-            $orders = Order::where('username', $username)->get();
+    // Hanapin ang lahat ng transactions na nauugnay sa user ID
+    $orders = Order::where('order_id', $userId)->get();
 
-            // Ibalik ang view kasama ang transactions
-            return view('userDash.userHistory', compact('orders'));
+    // Ibalik ang view kasama ang transactions
+    return view('userDash.userHistory', compact('orders'));
         }
 
         public function userOrder()
@@ -46,20 +45,23 @@ class OrderController extends Controller
         'product_id' => 'required|exists:products,id',
         'quantity' => 'required|integer|min:1',
     ]);
-
-
     // Retrieve the product based on the selected product_id
     $product = Product::findOrFail($validated['product_id']);
 
     // Get the authenticated user's username
     $username = Auth::user()->username;
+    $location = Auth::user()->location;
 
+     // Get the authenticated user's ID
+     $orderId = Auth::id();
     // Create a new Order record for user purchases
     Order::create([
+        'order_id' => $orderId,
         'username' => $username,
         'product_Name' => $product->product_Name,
         'quantity' => $validated['quantity'],
         'price' => $product->price * $validated['quantity'],
+        'location' => $location,
         'image_url' => $product->image_url,
         'purchase_date' => now(),
         'status' => false, // Default status is false
@@ -116,7 +118,31 @@ class OrderController extends Controller
     return redirect()->back()->with('message', 'Order placed and saved to payment successfully!');
 }
 
+public function completedOrders()
+{
+    // Kunin ang lahat ng orders na may status na 1
+    $completedOrders = Order::where('status', 1)->get();
 
+    // Ibalik ang view na nagpapakita ng mga natapos na order
+    return view('adminDash.completedOrder', compact('completedOrders'));
+}
+
+public function cancelOrder($id)
+{
+    // Hanapin ang order gamit ang ID
+    $order = Order::find($id);
+
+    // I-check kung ang order ay umiiral
+    if (!$order) {
+        return redirect()->back()->with('error', 'Order not found.');
+    }
+
+    // I-delete ang order mula sa database
+    $order->delete();
+
+    // I-redirect pabalik na may success message
+    return redirect()->back()->with('success', 'Order successfully canceled.');
+}
 
     /**
      * Show the form for creating a new resource.

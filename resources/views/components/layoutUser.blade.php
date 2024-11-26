@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
+    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,7 +15,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <title>User</title>
+    <title>@yield('title', 'Default Title')</title>
 
     <style>
         :root {
@@ -102,7 +103,7 @@
 
         <!-- Mobile Menu Button -->
         <div class="p-4 bg-blue-600 text-white flex justify-between lg:hidden">
-            <h1 class="text-2xl font-bold">iWaterFill</h1>
+            <h1 class="text-2xl font-bold">Lola A's Tubigan</h1>
             <button id="menuButton" class="text-3xl">
                 <i class="ri-menu-line"></i>
             </button>
@@ -114,7 +115,8 @@
         <!-- Sidebar -->
         <div id="sidebar" class="sidebar fixed inset-y-0 left-0 w-64 lg:relative lg:flex lg:flex-col lg:shadow-md lg:overflow-y-auto">
             <div class="flex items-center justify-between p-4">
-                <h1 class="text-white font-bold text-xl">iWaterFill</h1>
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-[70px] h-[70px] m-5">
+                <h1 class="text-white font-bold text-xl mr-4">Lola A's Tubigan</h1>
                 <button id="closeSidebarButton" class="text-white text-2xl lg:hidden">
                     <i class="ri-close-line"></i>
                 </button>
@@ -133,10 +135,6 @@
                         <i class="ri-history-line mr-3"></i>
                         <span>Order History</span>
                     </a>
-                    <a href="#" class="flex items-center p-3 text-gray-200 text-base rounded-lg">
-                        <i class="ri-shopping-cart-line mr-3"></i>
-                        <span>Order</span>
-                    </a>
                     <div class="mt-auto pt-4 border-t border-gray-200">
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
@@ -146,13 +144,39 @@
                             </button>
                         </form>
                     </div>
+                    <!-- Contact Information Section -->
+                <div class="mt-8 p-4 bg-opacity-20 bg-white rounded-lg">
+                    <div class="text-gray-200 space-y-4">
+                        <div class="space-y-2">
+                            <h3 class="font-semibold flex items-center">
+                                <i class="ri-phone-line mr-2"></i>Contact Numbers
+                            </h3>
+                            <p class="text-sm pl-6">09567523649</p>
+                            <p class="text-sm pl-6">09423217030</p>
+                        </div>
+
+                        <div class="space-y-2">
+                            <h3 class="font-semibold flex items-center">
+                                <i class="ri-map-pin-line mr-2"></i>Location
+                            </h3>
+                            <p class="text-sm pl-6">Blk 13 Lot 16 Villa Crisanta Subdivision</p>
+                        </div>
+
+                        <div class="space-y-2">
+                            <h3 class="font-semibold flex items-center">
+                                <i class="ri-facebook-circle-line mr-2"></i>Facebook
+                            </h3>
+                            <p class="text-sm pl-6">Ysabelle Anne Balbago Causapin</p>
+                        </div>
+                    </div>
+                </div>
                 </nav>
 
             </div>
         </div>
 
         <!-- Main Content -->
-        <main class="flex-1 min-h-screen main-content">
+        <main class="flex-1 min-h-screen main-content bg-gradient-to-br from-blue-50 to-cyan-50 p-6">
             @yield('userDash')
         </main>
     </div>

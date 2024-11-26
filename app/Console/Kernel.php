@@ -13,13 +13,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // // Idagdag ang command sa schedule
-        // $schedule->command('sales:update-summary')->everyMinute();
-        // // $schedule->call(function () {
-        // //     $controller = new SalesController();
-        // //     $controller->updateSalesSummary();
-        // // })->everyMinute();
+
     }
+
+
 
     /**
      * Register the commands for the application.

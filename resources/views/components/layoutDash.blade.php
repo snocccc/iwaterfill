@@ -3,15 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
-    <title>Admin</title>
+
+    <title>@yield('title', 'Default Title')</title>
 
     <style>
         :root {
@@ -74,6 +81,11 @@
             pointer-events: none;
         }
 
+        .sidebar-header .flex {
+    gap: 1rem; /* Adds space between logo and the name */
+}
+
+
         .main-content {
             background: linear-gradient(to right, var(--color-very-light-blue), var(--color-pale-blue));
             overflow-y: auto;
@@ -123,7 +135,8 @@
 <body class="font-mont">
     <div class="flex flex-col lg:flex-row h-screen">
         <div class="p-4 bg-blue-600 text-white flex justify-between lg:hidden">
-            <h1 class="text-2xl font-bold">iWaterFill</h1>
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-8 h-8 ml-10">
+            <h1 class="text-2xl font-bold">Lola A's Tubigan</h1>
             <button id="menuButton" class="text-3xl">
                 <i class="ri-menu-line"></i>
             </button>
@@ -134,7 +147,8 @@
         <div id="sidebar" class="sidebar fixed inset-y-0 left-0 w-64 lg:relative">
             <div class="sidebar-header">
                 <div class="flex items-center justify-between">
-                    <h1 class="text-white font-bold text-xl">iWaterFill</h1>
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-8 h-8">
+                    <h1 class="text-white font-bold text-xl mr-5">Lola A's Tubigan</h1>
                     <button id="closeSidebarButton" class="text-white text-2xl lg:hidden">
                         <i class="ri-close-line"></i>
                     </button>
@@ -147,7 +161,7 @@
                         <i class="ri-home-8-line mr-3"></i> Dashboard
                     </a>
                     <a href="{{ route('purchase') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('purchase') ? 'active' : '' }}">
-                        <i class="ri-shopping-cart-line mr-3"></i> Add Purchase
+                        <i class="ri-shopping-cart-line mr-3"></i> POS
                     </a>
                     <a href="{{ route('order') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('order') ? 'active' : '' }}">
                         <i class="ri-check-line mr-3"></i> Online Orders
@@ -161,6 +175,10 @@
                     <a href="{{ route('history') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('history') ? 'active' : '' }}">
                         <i class="ri-time-line mr-3"></i> Transaction History
                     </a>
+                    <a href="{{ route('settings') }}" class="flex items-center p-3 text-gray-200 rounded-lg {{ request()->routeIs('settings') ? 'active' : '' }}">
+                        <i class="ri-settings-2-line mr-3"></i> Settings
+                    </a>
+
                 </nav>
             </div>
 
@@ -177,7 +195,7 @@
 
 
 
-        <main class="flex-1 main-content">
+        <main class="flex-1 main-content bg-gradient-to-br from-blue-50 to-cyan-50">
             @yield('dash')
         </main>
     </div>

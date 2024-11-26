@@ -6,6 +6,14 @@
     <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 space-y-8">
         <h1 class="text-3xl font-extrabold text-center text-[var(--color-dark-blue)]">Create An Account</h1>
 
+
+        <div class="text-center pt-4">
+            <p class="text-sm text-[var(--color-dark-blue)]">Already have an account?</p>
+            <a href="{{ route('login') }}" class="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--color-medium-blue)] hover:bg-[var(--color-dark-blue)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-light-blue)]">
+                Login
+            </a>
+        </div>
+
         <form id="registration-form" action="{{ route('register') }}" method="post" class="space-y-6">
             @csrf
 
@@ -47,7 +55,7 @@
             <div id="phase-2" class="space-y-4 hidden">
                 <!-- Location -->
                 <div>
-                    <label for="location" class="block text-sm font-medium text-[var(--color-dark-blue)]">Location</label>
+                    <label for="location" class="block text-sm font-medium text-[var(--color-dark-blue)]">Barangay</label>
                     <div class="mt-1 relative rounded-md shadow-sm">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="ri-map-pin-line text-[var(--color-medium-blue)]"></i>
@@ -119,6 +127,8 @@
         </form>
     </div>
 </div>
+
+
 
 <script>
    document.addEventListener('DOMContentLoaded', function() {

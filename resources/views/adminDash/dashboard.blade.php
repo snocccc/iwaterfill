@@ -1,106 +1,125 @@
 @extends('components.layoutDash')
 
-
+@section('title', 'Admin Dashboard')
 @section('dash')
 
 <style>
-    /* Mobile Styles */
+      /* Mobile Styles */
 @media (max-width: 767px) {
-  .min-h-screen {
-    min-height: auto;
+  /* Chart container adjustments */
+  .max-w-7xl {
+    padding: 1rem;
   }
 
-  .grid-cols-1 {
-    grid-template-columns: 1fr;
-  }
-
-  .sm\:grid-cols-2 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .lg\:grid-cols-3 {
-    grid-template-columns: repeat(1, 1fr);
-  }
-
-  .p-5 {
-    padding: 1.25rem;
-  }
-
-  .text-2xl {
-    font-size: 1.5rem;
-    line-height: 2rem;
-  }
-
-  .text-3xl {
-    font-size: 1.875rem;
-    line-height: 2.25rem;
-  }
-
-  #salesChart {
+  /* Chart height adjustments */
+  .h-[400px] {
     height: 300px !important;
   }
-}
 
-/* Desktop Styles */
-@media (min-width: 768px) {
-  .sm\:grid-cols-2 {
-    grid-template-columns: repeat(2, 1fr);
+  /* Chart padding adjustments */
+  .p-6 {
+    padding: 1rem;
   }
 
-  .lg\:grid-cols-3 {
-    grid-template-columns: repeat(3, 1fr);
+  /* Header adjustments */
+  .text-xl {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  /* Reduce icon size */
+  .w-6, .h-6 {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  /* Adjust spacing */
+  .mb-6 {
+    margin-bottom: 1rem;
+  }
+
+  .space-x-3 > * + * {
+    margin-left: 0.5rem;
+  }
+
+  /* Chart legend adjustments */
+  #salesPredictionChart {
+    max-height: 300px !important;
   }
 }
 
-/* New header styles */
-.dashboard-header {
-    background: linear-gradient(to right, #ffffff, #f0f9ff);
-    border-bottom: 1px solid #e5e7eb;
-    margin-bottom: 2rem;
-    padding: 1.5rem 0;
+/* Tablet Styles */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .h-[400px] {
+    height: 350px !important;
+  }
+
+  .max-w-7xl {
+    padding: 1.5rem;
+  }
+}
+
+/* Ensure Chart.js is responsive */
+canvas#salesPredictionChart {
+  max-width: 100%;
+  height: auto !important;
 }
 </style>
-
 
 <div class="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 py-8 px-4">
     <div class="max-w-7xl mx-auto space-y-6">
         <!-- New Header Section -->
-    <div class="dashboard-header">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-                <!-- Title and Overview Section -->
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center space-x-3">
-                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                        </svg>
-                        <div>
-                            <h1 class="text-2xl font-bold text-gray-900">Sales Overview</h1>
-                            <p class="text-sm text-gray-500 mt-1">Dashboard Analytics</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Period Select -->
-                <div class="flex items-center space-x-4">
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-2">
-                        <form action="{{ route('dashboard') }}" method="GET" class="flex items-center space-x-2">
-                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        <div class="dashboard-header">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                    <!-- Title and Overview Section -->
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                             </svg>
-                            <select id="period" name="period"
-                                    class="bg-transparent border-none text-gray-900 text-sm focus:ring-0 focus:outline-none"
-                                    onchange="this.form.submit()">
-                                <option value="weekly" {{ $period == 'weekly' ? 'selected' : '' }}>Weekly View</option>
-                                <option value="monthly" {{ $period == 'monthly' ? 'selected' : '' }}>Monthly View</option>
-                                <option value="yearly" {{ $period == 'yearly' ? 'selected' : '' }}>Yearly View</option>
-                            </select>
-                        </form>
+                            <div>
+                                <h1 class="text-2xl font-bold text-gray-900">Sales Overview</h1>
+                                <p class="text-sm text-gray-500 mt-1">Dashboard Analytics</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+
+        <a href="{{ route('order') }}">
+            <div class="bg-white rounded-lg border border-gray-200 shadow-lg mt-5">
+                <div class="p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-3 bg-orange-100 rounded-lg">
+                                <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900">Pending Orders</h3>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm font-medium text-gray-500">Current</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center space-x-2">
+                        <p class="text-3xl font-bold text-red-900">{{ $pendingOrders ?? 0 }}</p>
+
+                        <!-- Notification badge -->
+                        @if($pendingOrders > 0)
+                            <span class="inline-block w-3 h-3 bg-red-500 rounded-full animate-pulse absolute top-0 right-0 mt-2 mr-2"></span>
+                        @endif
+
+                        <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </a>
+
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Today's Sales -->
             <div class="bg-white rounded-lg border border-gray-200 shadow-lg">
@@ -152,39 +171,153 @@
               </div>
             </div>
 
-            {{-- <!-- Predicted Sales -->
-            <div class="bg-white rounded-lg border border-gray-200 shadow-lg">
-              <div class="p-5">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center space-x-3">
-                    <div class="p-3 bg-purple-100 rounded-lg">
-                      <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                      </svg>
+            <div class="bg-white rounded-lg border border-gray-200 shadow-lg cursor-pointer hover:shadow-xl transition-all" onclick="openExpensesModal()">
+                <div class="p-5">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <div class="p-3 bg-red-100 rounded-lg">
+                        <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4M12 20V4"></path>
+                        </svg>
+                      </div>
+                      <h3 class="text-lg font-medium text-gray-900">Today's Expenses</h3>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900">Predicted Sales</h3>
+                    <div class="flex items-center space-x-2">
+                      <span class="text-sm font-medium text-gray-500">Last 24 hours</span>
+                    </div>
+                  </div>
+                  <div class="mt-4 flex items-center space-x-2">
+                    <p class="text-3xl font-bold text-gray-900">₱<span id="totalExpenses">{{ number_format($totalExpensesToday, 2) }}</span></p>
+                    <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"></path>
+                    </svg>
                   </div>
                 </div>
-                <div class="mt-4">
-                  @if($predictedSales === 'no data yet')
-                    <p class="text-xl font-semibold text-red-500">No data yet</p>
-                  @else
-                    <p class="text-3xl font-bold text-gray-900">₱{{ number_format((float) $predictedSales, 2) }}</p>
-                    <p class="text-sm text-gray-500 mt-1">Based on recent trends</p>
-                  @endif
-                </div>
               </div>
-            </div> --}}
 
-            <form action="{{ route('addd') }}" method="post" class="space-y-6">
-                @csrf
-                <div>
-                    <button type="submit"
-                        class="w-full bg-[#0077b6] hover:bg-[#00b4d8] text-white font-bold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-[#00b4d8] focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:-translate-y-1">
-                        Insert Data
-                    </button>
+              <!-- Modal -->
+<div id="expensesModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-lg bg-white">
+      <div class="mt-3">
+        <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Update Today's Expenses</h3>
+        <div class="mt-2">
+          <!-- Form for updating an expense -->
+<form id="expensesForm" class="space-y-4" method="POST" action="{{ route('finalize')}}">
+    @csrf
+    <div>
+      <label for="amount" class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+      <div class="relative">
+        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">₱</span>
+        <input type="number" id="amount" name="amount" step="0.01" class="pl-8 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="0.00">
+      </div>
+    </div>
+
+    <div>
+      <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+      <textarea id="description" name="description" rows="3" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Enter expense description..."></textarea>
+    </div>
+
+    <div class="flex justify-end space-x-3">
+      <button type="button" onclick="closeExpensesModal()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium rounded-md">
+        Cancel
+      </button>
+      <!-- Button for updating an expense -->
+      <button type="submit" formaction="{{ route('update') }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md">
+        Update
+      </button>
+      <!-- Button for finalizing expenses -->
+      <button type="submit" formaction="{{ route('finalize') }}" id="doneBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md">
+        Done
+      </button>
+    </div>
+  </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+ <!-- Modal Backdrop -->
+<div id="noExpensesModal" class="fixed inset-0 flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+    <!-- Backdrop overlay -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+
+    <!-- Modal Content -->
+    <div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md mx-4 transform transition-all duration-300 scale-95">
+        <!-- Header -->
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Walang Expenses</h2>
+        </div>
+
+        <!-- Body -->
+        <div class="p-6">
+            <div class="flex items-center space-x-4">
+                <div class="flex-shrink-0">
+                    <!-- Info Icon -->
+                    <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                 </div>
-            </form>
+                <p class="text-gray-600 dark:text-gray-300">Walang expenses na naitala ngayong araw. Pakisuri ang iyong mga datos.</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+            <button id="closeModalBtn" class="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg text-sm transition-colors duration-300 focus:ring-4 focus:ring-blue-300 focus:outline-none">
+                Okay
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+  <!-- Monthly Average Profit -->
+<div class="bg-white rounded-lg border border-gray-200 shadow-lg">
+    <div class="p-5">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="p-3 bg-emerald-100 rounded-lg">
+            <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900">Monthly Profit Average</h3>
+        </div>
+      </div>
+      <div class="mt-4 flex items-center space-x-2">
+        <p class="text-3xl font-bold text-gray-900">₱{{ number_format($profit, 2) }}</p>
+        <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Average Expenses -->
+  <div class="bg-white rounded-lg border border-gray-200 shadow-lg">
+    <div class="p-5">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="p-3 bg-red-100 rounded-lg">
+            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4M12 20V4"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900">Monthly Expenses Average</h3>
+        </div>
+      </div>
+      <div class="mt-4 flex items-center space-x-2">
+        <p class="text-3xl font-bold text-gray-900">₱{{ number_format($totalExpenses, 2) }}</p>
+        <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+
 
 
 
@@ -198,7 +331,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                       </svg>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900">Daily Average</h3>
+                    <h3 class="text-lg font-medium text-gray-900">Daily Average Income</h3>
                   </div>
                 </div>
                 <div class="mt-4 flex items-center space-x-2">
@@ -210,27 +343,6 @@
               </div>
             </div>
 
-            <!-- Weekly Average Sales -->
-            <div class="bg-white rounded-lg border border-gray-200 shadow-lg">
-              <div class="p-5">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center space-x-3">
-                    <div class="p-3 bg-indigo-100 rounded-lg">
-                      <svg class="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                      </svg>
-                    </div>
-                    <h3 class="text-lg font-medium text-gray-900">Weekly Average</h3>
-                  </div>
-                </div>
-                <div class="mt-4 flex items-center space-x-2">
-                  <p class="text-3xl font-bold text-gray-900">₱{{ number_format($averageWeeklySales, 2) }}</p>
-                  <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
 
             <!-- Monthly Average Sales -->
             <div class="bg-white rounded-lg border border-gray-200 shadow-lg">
@@ -242,7 +354,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                       </svg>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900">Monthly Average</h3>
+                    <h3 class="text-lg font-medium text-gray-900">Monthly Average Income</h3>
                   </div>
                 </div>
                 <div class="mt-4 flex items-center space-x-2">
@@ -279,205 +391,205 @@
             @endforeach
         </div>
 
-        <!-- Sales Chart -->
-        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center space-x-2">
-                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- Wrap both charts in a grid container -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-7xl mx-auto p-6">
+    <!-- Sales Chart -->
+    <div class="bg-white rounded-lg border border-gray-200 shadow-lg overflow-hidden">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-blue-100 rounded-lg">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                         </svg>
-                        <h3 class="text-lg font-medium text-gray-900">Sales Overview</h3>
                     </div>
-                    <div class="flex items-center space-x-1">
-                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Sales & Predictions Overview</h2>
+                        <p class="text-sm text-gray-500">Monthly comparison of actual vs predicted sales</p>
+                    </div>
+                </div>
+            </div>
+            <div class="h-96 sm:h-[400px]">
+                <canvas id="salesPredictionChart" style="display: {{ $hasData ? 'block' : 'none' }}"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Locations Chart -->
+    <div class="bg-white rounded-lg border border-gray-200 shadow-lg overflow-hidden">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-green-100 rounded-lg">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
-                        <span class="text-sm text-gray-500">{{ ucfirst($period) }} Data</span>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Customer Location Distribution</h2>
+                        <p class="text-sm text-gray-500">Geographic distribution of customer base</p>
                     </div>
                 </div>
-                <div class="h-[400px]">
-                    <canvas id="salesChart"></canvas>
-                </div>
+            </div>
+            <div class="h-96 sm:h-[400px]">
+                <canvas id="locationChart"></canvas>
             </div>
         </div>
     </div>
 </div>
-
-<div class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
-    <div class="p-6">
-        <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center space-x-2">
-                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                </svg>
-                <h3 class="text-lg font-medium text-gray-900">Sales Prediction Analysis</h3>
-            </div>
-            <div class="flex items-center space-x-1">
-                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                </svg>
-                <span class="text-sm text-gray-500">Forecast View</span>
-            </div>
-        </div>
-
-        {{-- <!-- Check if there is insufficient data -->
-        @if(isset($chartData['error']) && $chartData['error'] == 'Insufficient data')
-            <div class="bg-yellow-100 border border-yellow-400 text-yellow-800 p-4 rounded-lg mb-4">
-                <strong>Warning:</strong> Insufficient data available for predictions.
-            </div>
-        @else --}}
-            <!-- Display prediction chart -->
-            <div class="h-[400px]">
-                <canvas id="predictionChart"></canvas>
-            </div>
-        {{-- @endif --}}
-    </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
 <script>
-    const salesData = @json($salesData);
-    const totals = salesData.map(data => data.total_sales);
-    const dates = salesData.map(data => data.date);
-    const period = '{{ $period }}';
-
-    const formatDate = (date) => {
-        const momentDate = moment(date);
-        switch(period) {
-            case 'weekly': return momentDate.format('ddd');
-            case 'monthly': return momentDate.format('MMM D');
-            case 'yearly': return momentDate.format('MMM YYYY');
-            default: return date;
-        }
-    };
-
-    const ctx = document.getElementById('salesChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: dates.map(formatDate),
-            datasets: [{
-                label: 'Sales',
-                data: totals,
-                borderColor: '#2563eb',
-                backgroundColor: '#93c5fd33',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.4,
-                pointRadius: 4,
-                pointBackgroundColor: '#2563eb',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2,
-                pointHoverRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                intersect: false,
-                mode: 'index'
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    border: {
-                        display: false
-                    },
-                    grid: {
-                        color: '#e5e7eb',
-                        drawBorder: false
-                    },
-                    ticks: {
-                        callback: value => '₱' + value.toLocaleString(),
-                        font: { size: 11 }
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        font: { size: 11 }
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    backgroundColor: '#1e40af',
-                    padding: 12,
-                    titleFont: { size: 13 },
-                    bodyFont: { size: 12 },
-                    callbacks: {
-                        label: context => '₱' + context.parsed.y.toLocaleString()
-                    }
-                }
+   const locationCtx = document.getElementById('locationChart').getContext('2d');
+const locationChart = new Chart(locationCtx, {
+    type: 'bar',
+    data: {
+        labels: @json($locationLabels),
+        datasets: [{
+            label: 'Number of Customers',
+            data: @json($locationCounts),
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
             }
         }
-    });
-    const chartData = @json($chartData); // Pasok ang PHP chart data sa JavaScript
-console.log('Chart Data:', chartData);
-
-const setupPredictionChart = () => {
-    const predictionCtx = document.getElementById('predictionChart').getContext('2d');
-
-    if (!chartData || chartData.length < 6) {
-        console.error('Insufficient sales data for the chart.');
-        return;
     }
+});
 
-    const predictedValues = chartData.map(data => data.predicted_sales);
-    const weeks = chartData.map(data => {
-        const weekDate = new Date(data.week);  // Convert week to a Date object
-        const month = weekDate.toLocaleString('default', { month: 'short' });  // Get short month name
-        const year = weekDate.getFullYear();
-        return `${month} ${year}`;  // Format as "Mar 2024", "Apr 2024", etc.
-    });
 
-    new Chart(predictionCtx, {
-        type: 'line',
-        data: {
-            labels: weeks,
-            datasets: [
-                {
-                    label: 'Predicted Sales',
-                    data: predictedValues,
-                    borderColor: '#7c3aed',
-                    backgroundColor: '#c4b5fd33',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#7c3aed',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointHoverRadius: 6
+
+    const actualSales = @json($actualSales);
+    const predictedSales = @json($predictedSales);
+
+    // Format the month names for the x-axis
+    const formatMonth = month => moment(month, "YYYY-MM").format("MMM YYYY");
+
+    const actualSalesData = actualSales.map(item => ({
+        month: formatMonth(item.month), // Format month to "MMM YYYY"
+        sales: item.sales
+    }));
+
+    const predictedSalesData = predictedSales.map(item => ({
+        month: formatMonth(item.month), // Format month to "MMM YYYY"
+        sales: item.sales
+    }));
+
+    const ctx = document.getElementById('salesPredictionChart').getContext('2d');
+
+    new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [
+            ...actualSalesData.map(d => d.month),
+            ...predictedSalesData.map(d => d.month)
+        ],
+        datasets: [
+            {
+                label: 'Actual Sales',
+                data: [
+                    ...actualSalesData.map(d => d.sales),
+                    ...Array(predictedSalesData.length).fill(null)
+                ],
+                borderColor: '#2563eb',
+                tension: 0.4,
+                borderWidth: 2 // Default line thickness
+            },
+            {
+                label: 'Predicted Sales',
+                data: [
+                    ...Array(actualSalesData.length).fill(null),
+                    ...predictedSalesData.map(d => d.sales)
+                ],
+                borderColor: '#9333ea',
+                tension: 0.4,
+                borderWidth: 2
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false, // Allow the height to adjust properly
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    font: {
+                        size: 12 // Smaller font for mobile
+                    }
                 }
-            ]
+            }
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: value => '₱' + value.toLocaleString() // Format sa peso
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Month',
+                    font: {
+                        size: 14 // Adjust text size for readability
+                    }
+                },
+                ticks: {
+                    maxRotation: 45, // Avoid text overlapping
+                    minRotation: 0
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'Sales',
+                    font: {
+                        size: 14
                     }
                 }
             }
         }
-    });
-};
-
-document.addEventListener('DOMContentLoaded', setupPredictionChart);
+    }
+});
 
 
+let totalExpenses = 0;
+// For demonstration purposes, open the modal after 1 second
+setTimeout(openModal, 1000);
+
+function openExpensesModal() {
+  document.getElementById('expensesModal').classList.remove('hidden');
+}
+
+function closeExpensesModal() {
+  document.getElementById('expensesModal').classList.add('hidden');
+  document.getElementById('expensesForm').reset();
+}
+
+function updateExpenses() {
+  const amount = parseFloat(document.getElementById('amount').value) || 0;
+  totalExpenses += amount;
+  document.getElementById('totalExpenses').textContent = totalExpenses.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+  document.getElementById('expensesForm').reset();
+}
+
+function submitExpenses() {
+  // Here you would typically send the data to your backend
+  // For now, we'll just close the modal
+  closeExpensesModal();
+  // You can add an AJAX call here to save the total expenses
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const modal = document.getElementById('expensesModal');
+  if (event.target == modal) {
+    closeExpensesModal();
+  }
+}
 </script>
 @endsection

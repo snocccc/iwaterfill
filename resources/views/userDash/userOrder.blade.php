@@ -1,5 +1,7 @@
 @extends('components.layoutUser')
 
+@section('title', 'Add Order')
+
 @section('userDash')
 <div class="bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen py-6 px-4 sm:px-6 lg:px-8">
     <div class="max-w-5xl mx-auto">

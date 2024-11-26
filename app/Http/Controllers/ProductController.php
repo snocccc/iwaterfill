@@ -121,8 +121,6 @@ public function updateProducts(Request $request)
     return redirect()->back()->with('success', 'Product quantities updated successfully.');
 }
 
-
-
     /**
      * Show the form for creating a new resource.
      */
