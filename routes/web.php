@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Route;
 // Guest Routes (for users who are not authenticated)
 Route::middleware('guest')->group(function() {
     // Authentication
-    Route::view('/login', 'auth.login')->name('login');
-    Route::post('/login', [UserController::class, 'login']);
+    Route::view('/', 'auth.login')->name('login');
+    Route::post('/', [UserController::class, 'login']);
 
     // Registration
     Route::view('/register', 'auth.register')->name('register');
@@ -88,4 +88,7 @@ Route::middleware('auth')->group(function() {
        Route::view('profile/admin-update-password', 'adminDash.changePass')->name('adminUpdatepass');
     });
 
+});
+Route::fallback(function () {
+    return redirect('/');
 });

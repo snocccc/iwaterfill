@@ -69,7 +69,7 @@ public function logout(Request $request)
     $request->session()->regenerateToken();
 
     // Set headers to prevent caching
-    return redirect('/login')->withHeaders([
+    return redirect('/')->withHeaders([
         'Cache-Control' => 'no-cache, no-store, must-revalidate, max-age=0',
         'Pragma' => 'no-cache',
         'Expires' => '0',
