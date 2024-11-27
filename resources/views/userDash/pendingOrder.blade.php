@@ -9,6 +9,19 @@
             <h2 class="text-2xl font-bold tracking-wide">Pending Orders</h2>
         </div>
 
+        @if (session('success'))
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        {{ session('error') }}
+    </div>
+@endif
+
+
         @if($pendingOrders->isNotEmpty())
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -16,6 +29,7 @@
                         <tr>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Price</th>
@@ -32,6 +46,9 @@
                                     <div class="text-sm text-gray-900">{{ $order->product_Name }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ $order->phone }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">{{ $order->location }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -42,16 +59,16 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-3">
-                                        <form action="{{ route('order.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                                        <!-- Cancel Button -->
+                                        <form action="{{route('orders.cancel', ['id' => $order->id])}}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this order?');">
                                             @csrf
-                                            @method('DELETE')
+                                            @method('POST')
                                             <button type="submit" class="text-red-600 hover:text-red-900 transition-colors duration-200 hover:underline">
                                                 Cancel
                                             </button>
                                         </form>
                                     </div>
                                 </td>
-
                             </tr>
                         @endforeach
                     </tbody>

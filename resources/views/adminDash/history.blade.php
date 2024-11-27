@@ -134,6 +134,7 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Purchase Date</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -146,6 +147,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $order->product_Name }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $order->quantity }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₱{{ number_format($order->price, 2) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $order->phone }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $order->location }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ \Carbon\Carbon::parse($order->purchase_date)->format('F d, Y') }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -173,6 +175,10 @@
                             <div>
                                 <p class="text-sm text-gray-500">Quantity</p>
                                 <p class="text-sm font-medium text-gray-900">{{ $order->quantity }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Phone</p>
+                                <p class="text-sm font-medium text-gray-900">{{ $order->phone }}</p>
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">Location</p>

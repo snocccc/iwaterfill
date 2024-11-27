@@ -87,7 +87,7 @@ canvas#salesPredictionChart {
                 </div>
             </div>
         </div>
-
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <a href="{{ route('order') }}">
             <div class="bg-white rounded-lg border border-gray-200 shadow-lg mt-5">
                 <div class="p-5">
@@ -119,6 +119,40 @@ canvas#salesPredictionChart {
                 </div>
             </div>
         </a>
+
+        <a href="{{ route('admin.cancelled.orders') }}">
+            <div class="bg-white rounded-lg border border-gray-200 shadow-lg mt-5">
+                <div class="p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-3 bg-red-100 rounded-lg">
+                                <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900">Cancelled Orders</h3>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm font-medium text-gray-500">Current</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center space-x-2">
+                        <p class="text-3xl font-bold text-red-900">{{ $cancelledOrders ?? 0 }}</p>
+
+                        <!-- Notification badge -->
+                        @if($cancelledOrders > 0)
+                            <span class="inline-block w-3 h-3 bg-red-500 rounded-full animate-pulse absolute top-0 right-0 mt-2 mr-2"></span>
+                        @endif
+
+                        <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </a>
+        </div>
+
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Today's Sales -->
@@ -367,7 +401,7 @@ canvas#salesPredictionChart {
         </div>
 
       <!-- Wrap both charts in a grid container -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-7xl mx-auto p-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto p-6">
     <!-- Sales Chart -->
     <div class="bg-white rounded-lg border border-gray-200 shadow-lg overflow-hidden">
         <div class="p-6">

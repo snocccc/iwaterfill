@@ -59,6 +59,7 @@
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
                                     <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                                 </tr>
                             </thead>
@@ -71,6 +72,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $order->quantity }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $order->price }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $order->location }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $order->phone }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
                                         <button onclick="openModal({{ $order->id }})" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                             Process
@@ -118,6 +120,10 @@
                                 <span class="text-sm text-gray-500">Location:</span>
                                 <span class="text-sm text-gray-900">{{ $order->location }}</span>
                             </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-500">Phone:</span>
+                                <span class="text-sm text-gray-900">{{ $order->phone }}</span>
+                            </div>
                         </div>
                     </div>
                     @endforeach
@@ -147,11 +153,11 @@
                     </h3>
 
                     @if($orders->isEmpty())
-    <p>Walang pending orders sa kasalukuyan.</p>
+    <p>There's No Pending Orders Yet.</p>
 @else
 
                     <!-- Display Product Image -->
-                    <img id="modalProductImage" src="{{ asset('images/' . $order->image_url . '.png') }}" alt="Product Image" class="w-full h-auto mb-4">
+                    <img id="modalProductImage" src="{{ asset('images/' . $order->image_url . '.png') }}" alt="Product Image" class="w-[300px] h-[300px] mb-4 ml-10">
                     @endif
                     <form method="POST" action="{{ route('placeOrder') }}" class="space-y-6">
                         @csrf
@@ -206,6 +212,15 @@
                                 </label>
                                 <p id="modalLocation" class="mt-1 text-sm text-gray-900"></p>
                             </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 flex items-center">
+                                    <svg class="h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2 .895 2 2 0 1.105-.89 2-2 2s-2-.895-2-2 0-2 2-2"/>
+                                    </svg>
+                                    Phone
+                                </label>
+                                <p id="modalPhone" class="mt-1 text-sm text-gray-900"></p>
+                            </div>
                         </div>
 
                         <button type="submit" class="inline-flex justify-center w-full rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
@@ -234,6 +249,7 @@
     document.getElementById('modalQuantity').textContent = order.quantity;
     document.getElementById('modalPrice').textContent = order.price;
     document.getElementById('modalLocation').textContent = order.location;
+    document.getElementById('modalPhone').textContent = order.phone;
 
     // Show modal
     document.getElementById('orderModal').classList.remove('hidden');

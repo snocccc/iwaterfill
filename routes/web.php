@@ -34,9 +34,11 @@ Route::middleware('auth')->group(function() {
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
     Route::middleware(['role:user'])->group(function () {
+
     Route::get('/customer/profile', [ProfileController::class, 'index'])->name('profile');
     Route::get('/user/pending-orders', [ProfileController::class, 'userPending'])->name('user.pendingOrders');
-    Route::delete('/order/cancel/{id}', [OrderController::class, 'cancelOrder'])->name('order.cancel');
+    Route::post('/orders/cancel/{id}', [OrderController::class, 'cancel'])->name('orders.cancel');
+    Route::get('/cancelled-orders', [ProfileController::class, 'getCancelledOrders'])->name('user.cancelledOrders');
     Route::get('/user/completed-orders', [ProfileController::class, 'userCompleted'])->name('user.completedOrders');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
@@ -57,6 +59,8 @@ Route::middleware('auth')->group(function() {
        Route::post('/AddPurchase', [PaymentController::class, 'buy'])->name('buy');
        // Orders
        Route::get('/orders/pending', [OrderController::class, 'pendingOrders'])->name('order');
+       Route::get('/admin/cancelled-orders', [OrderController::class, 'getCancelledOrders'])->name('admin.cancelled.orders');
+
        Route::post('/orders/place', [OrderController::class, 'placeOrder'])->name('placeOrder');
        Route::get('/admin/completed-orders', [OrderController::class, 'completedOrders'])->name('completed.orders');
 

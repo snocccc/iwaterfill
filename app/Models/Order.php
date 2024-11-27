@@ -15,6 +15,7 @@ class Order extends Model
         'product_Name',
         'quantity',
         'price',
+        'phone',
         'location',
         'image_url',
         'purchase_date',

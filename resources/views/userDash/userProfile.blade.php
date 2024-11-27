@@ -59,7 +59,7 @@
     </div>
 
     <!-- Orders Cards Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Pending Orders -->
         <a href=" {{ route('user.pendingOrders') }}" class="block">
             <div class="bg-white rounded-2xl shadow-lg border border-blue-100 transition-transform hover:scale-[1.01] duration-300">
@@ -100,6 +100,26 @@
                 </div>
             </div>
         </a>
+
+        <a href=" {{ route('user.cancelledOrders') }}" class="block">
+            <div class="bg-white rounded-2xl shadow-lg border border-red-100 transition-transform hover:scale-[1.01] duration-300">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center space-x-3">
+                            <div class="bg-red-600 p-2 rounded-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 11-12.728 0m12.728 0L9 12m9-6.364L12 15"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-xl font-bold text-gray-800">Cancelled Orders</h2>
+                        </div>
+                        <span class="text-2xl font-bold text-red-600">{{ $cancelledCount }}</span>
+                    </div>
+                    <p class="text-sm text-gray-600">You have {{ $cancelledCount }} cancelled orders.</p>
+                </div>
+            </div>
+        </a>
+
 
     </div>
 </div>

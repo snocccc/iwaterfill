@@ -24,8 +24,9 @@ class ProfileController extends Controller
         // Bilangin ang pending at completed orders
         $pendingCount = DB::table('orders')->where('order_id', $user->id)->where('status', '0')->count();
         $completedCount = DB::table('orders')->where('order_id', $user->id)->where('status', '1')->count();
+        $cancelledCount = DB::table('orders')->where('order_id', $user->id)->where('status', '2')->count();
 
-        return view('userDash.userProfile', compact('user', 'pendingCount', 'completedCount'));
+        return view('userDash.userProfile', compact('user', 'pendingCount', 'completedCount', 'cancelledCount'));
     }
 
     public function userPending()
@@ -52,6 +53,21 @@ class ProfileController extends Controller
 
     return view('userDash.completedOrder', compact('completedOrders'));
 }
+
+public function getCancelledOrders()
+{
+    // Kunin ang naka-authenticate na user
+    $userId = auth()->id();
+
+    // Kunin ang mga cancelled orders ng user
+    $cancelledOrders = Order::where('order_id', $userId) // Base sa username
+        ->where('status', '2') // Ang status ay "canceled"
+        ->get();
+
+    // Ibalik ang view na may mga cancelled orders
+    return view('userDash.cancelledOrder', compact('cancelledOrders'));
+}
+
 
 
 

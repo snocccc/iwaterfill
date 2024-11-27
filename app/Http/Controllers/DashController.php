@@ -294,6 +294,7 @@ private function mergeDuplicateExpenses()
         $totalSales = Payment::sum('price');
         $averageMonthlySales = Historical::where('period_type', 'monthly')->avg('total_sales');
         $hasData = !$actualSales->isEmpty() || !empty($predictedSalesData);
+        $cancelledOrders = Order::where('status', 2)->count();
 
         $customerLocations = User::select('location', DB::raw('count(*) as count'))
             ->where('role', 'user')
@@ -319,7 +320,8 @@ private function mergeDuplicateExpenses()
             'hasData',
             'locationLabels',
             'locationCounts',
-            'monthlyExpenses' // Idagdag ang monthly expenses
+            'monthlyExpenses',
+            'cancelledOrders'
         ));
     }
 

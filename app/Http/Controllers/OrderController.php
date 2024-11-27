@@ -51,6 +51,7 @@ class OrderController extends Controller
     // Get the authenticated user's username
     $username = Auth::user()->username;
     $location = Auth::user()->location;
+    $phone = Auth::user()->phone;
 
      // Get the authenticated user's ID
      $orderId = Auth::id();
@@ -62,6 +63,7 @@ class OrderController extends Controller
         'quantity' => $validated['quantity'],
         'price' => $product->price * $validated['quantity'],
         'location' => $location,
+        'phone' => $phone,
         'image_url' => $product->image_url,
         'purchase_date' => now(),
         'status' => false, // Default status is false
@@ -127,22 +129,38 @@ public function completedOrders()
     return view('adminDash.completedOrder', compact('completedOrders'));
 }
 
-public function cancelOrder($id)
+public function cancel($id)
 {
     // Hanapin ang order gamit ang ID
     $order = Order::find($id);
 
-    // I-check kung ang order ay umiiral
+    // Suriin kung may order
     if (!$order) {
         return redirect()->back()->with('error', 'Order not found.');
     }
 
-    // I-delete ang order mula sa database
-    $order->delete();
+    // Siguraduhing nasa "pending" status (0) bago i-cancel
+    if ($order->status != 0) {
+        return redirect()->back()->with('error', 'Only pending orders can be canceled.');
+    }
 
-    // I-redirect pabalik na may success message
-    return redirect()->back()->with('success', 'Order successfully canceled.');
+    // I-update ang status bilang "canceled" (gamit natin ang 2 bilang example para sa canceled)
+    $order->status = 2; // Ang 2 ay maaaring mag-represent ng "canceled"
+    $order->save();
+
+    return redirect()->back()->with('success', 'Order has been canceled successfully.');
 }
+public function getCancelledOrders()
+{
+    // Retrieve all orders where status is 2
+    $cancelledOrders = Order::where('status', 2)->get();
+
+    // Pass the data to the view
+    return view('adminDash.cancelledOrder2', compact('cancelledOrders'));
+}
+
+
+
 
     /**
      * Show the form for creating a new resource.

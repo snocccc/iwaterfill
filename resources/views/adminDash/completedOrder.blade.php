@@ -52,6 +52,14 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
+                                Phone
+                            </div>
+                        </th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-blue-900">
+                            <div class="flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
                                 Location
                             </div>
                         </th>
@@ -80,6 +88,7 @@
                             <td class="px-6 py-4 text-sm text-blue-900">{{ $order->username }}</td>
                             <td class="px-6 py-4 text-sm text-blue-900">{{ $order->product_Name }}</td>
                             <td class="px-6 py-4 text-sm text-blue-900">₱{{ number_format($order->price, 2) }}</td>
+                            <td class="px-6 py-4 text-sm text-blue-900">{{ $order->phone }}</td>
                             <td class="px-6 py-4 text-sm text-blue-900">{{ $order->location }}</td>
                             <td class="px-6 py-4 text-sm text-blue-900">{{ \Carbon\Carbon::parse($order->purchase_date)->format('F d, Y') }}</td>
                             <td class="px-6 py-4">
@@ -98,7 +107,7 @@
                                     <svg class="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
                                     </svg>
-                                    <p class="font-medium">Walang nakitang completed orders.</p>
+                                    <p class="font-medium">There's No Completed Order Yet.</p>
                                 </div>
                             </td>
                         </tr>
