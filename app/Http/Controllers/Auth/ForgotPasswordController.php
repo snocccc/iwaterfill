@@ -32,7 +32,7 @@ class ForgotPasswordController extends Controller
      // Ipakita ang reset password form
      public function showResetForm($token)
      {
-         return view('auth.resetpass', ['token' => $token]);
+         return view('auth.resetPass', ['token' => $token]);
      }
 
      // I-reset ang password

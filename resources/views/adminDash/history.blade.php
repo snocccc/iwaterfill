@@ -76,7 +76,6 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Purchase Date</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -88,14 +87,6 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₱{{ number_format($payment->price, 2) }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ \Carbon\Carbon::parse($payment->purchase_date)->format('F d, Y') }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <div class="flex gap-4">
-                                    <a href="{{ route('payments.edit', $payment->id) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                    <form action="{{ route('payments.destroy', $payment->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure?')">Delete</button>
-                                    </form>
-                                </div>
                             </td>
                         </tr>
                         @endforeach
@@ -125,18 +116,7 @@
                                 <p class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($payment->purchase_date)->format('F d, Y') }}</p>
                             </div>
                         </div>
-                        <div class="flex justify-end gap-3">
-                            <a href="{{ route('payments.edit', $payment->id) }}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-indigo-50 hover:bg-indigo-100">
-                                Edit
-                            </a>
-                            <form action="{{ route('payments.destroy', $payment->id) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-red-600 bg-red-50 hover:bg-red-100" onclick="return confirm('Are you sure?')">
-                                    Delete
-                                </button>
-                            </form>
-                        </div>
+
                     </div>
                     @endforeach
                 </div>
@@ -169,14 +149,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $order->location }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ \Carbon\Carbon::parse($order->purchase_date)->format('F d, Y') }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <div class="flex gap-4">
-                                    <a href="" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                    <form action="" method="POST" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure?')">Delete</button>
-                                    </form>
-                                </div>
+
                             </td>
                         </tr>
                         @endforeach
@@ -210,16 +183,7 @@
                                 <p class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($order->purchase_date)->format('F d, Y') }}</p>
                             </div>
                         </div>
-                        <div class="flex justify-end gap-3"><a href="" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-indigo-50 hover:bg-indigo-100">
-                            Edit
-                        </a>
-                        <form action="" method="POST" class="inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-red-600 bg-red-50 hover:bg-red-100" onclick="return confirm('Are you sure?')">
-                                Delete
-                            </button>
-                        </form>
+
                     </div>
                 </div>
                 @endforeach

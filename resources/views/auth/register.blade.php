@@ -6,6 +6,12 @@
     <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 space-y-8">
         <h1 class="text-3xl font-extrabold text-center text-[var(--color-dark-blue)]">Create An Account</h1>
 
+        <!-- Display Success Message -->
+        @if(session('success'))
+        <div class="bg-green-100 text-green-800 p-4 rounded-md mb-4">
+            <p class="text-center">{{ session('success') }}</p>
+        </div>
+        @endif
 
         <div class="text-center pt-4">
             <p class="text-sm text-[var(--color-dark-blue)]">Already have an account?</p>
@@ -17,34 +23,31 @@
         <form id="registration-form" action="{{ route('register') }}" method="post" class="space-y-6">
             @csrf
 
+            <!-- Phase 1: Username and Email -->
             <div id="phase-1" class="space-y-4">
-              <!-- Username -->
-<div>
-    <label for="username" class="block text-sm font-medium text-[var(--color-dark-blue)]">Username</label>
-    <div class="mt-1 relative rounded-md shadow-sm">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <i class="ri-user-3-line text-[var(--color-medium-blue)]"></i>
-        </div>
-        <input type="text" name="username" id="username" value="{{ old('username') }}"
-            class="block w-full pl-10 pr-3 py-2 border border-[var(--color-very-light-blue)] rounded-md leading-5
-            bg-white placeholder-[var(--color-medium-blue)] focus:outline-none focus:ring-2 focus:ring-[var(--color-light-blue)]
-            focus:border-[var(--color-light-blue)] sm:text-sm"
-            placeholder="Enter your username" required>
-    </div>
-    @error('username')
-    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-    @enderror
-</div>
+                <div>
+                    <label for="username" class="block text-sm font-medium text-[var(--color-dark-blue)]">Username</label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="ri-user-3-line text-[var(--color-medium-blue)]"></i>
+                        </div>
+                        <input type="text" name="username" id="username" value="{{ old('username') }}"
+                            class="block w-full pl-10 pr-3 py-2 border border-[var(--color-very-light-blue)] rounded-md leading-5
+                            bg-white placeholder-[var(--color-medium-blue)] focus:outline-none focus:ring-2 focus:ring-[var(--color-light-blue)]"
+                            placeholder="Enter your username" required>
+                    </div>
+                    @error('username')
+                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
 
-
-                <!-- Email -->
                 <div>
                     <label for="email" class="block text-sm font-medium text-[var(--color-dark-blue)]">Email</label>
                     <div class="mt-1 relative rounded-md shadow-sm">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="ri-mail-line text-[var(--color-medium-blue)]"></i>
                         </div>
-                        <input type="email" name="email" id="email" value="{{ old('email') }}" class="block w-full pl-10 pr-3 py-2 border border-[var(--color-very-light-blue)] rounded-md leading-5 bg-white placeholder-[var(--color-medium-blue)] focus:outline-none focus:ring-2 focus:ring-[var(--color-light-blue)] focus:border-[var(--color-light-blue)] sm:text-sm" placeholder="Enter your email" required>
+                        <input type="email" name="email" id="email" value="{{ old('email') }}" class="block w-full pl-10 pr-3 py-2 border border-[var(--color-very-light-blue)] rounded-md leading-5 bg-white placeholder-[var(--color-medium-blue)] focus:outline-none focus:ring-2 focus:ring-[var(--color-light-blue)]" placeholder="Enter your email" required>
                     </div>
                     @error('email')
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -52,6 +55,7 @@
                 </div>
             </div>
 
+            <!-- Phase 2: Location and Phone -->
             <div id="phase-2" class="space-y-4 hidden">
                 <!-- Location -->
                 <div>
@@ -60,7 +64,7 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="ri-map-pin-line text-[var(--color-medium-blue)]"></i>
                         </div>
-                        <input type="text" name="location" id="location" value="{{ old('location') }}" class="block w-full pl-10 pr-3 py-2 border border-[var(--color-very-light-blue)] rounded-md leading-5 bg-white placeholder-[var(--color-medium-blue)] focus:outline-none focus:ring-2 focus:ring-[var(--color-light-blue)] focus:border-[var(--color-light-blue)] sm:text-sm" placeholder="Enter your location" required>
+                        <input type="text" name="location" id="location" value="{{ old('location') }}" class="block w-full pl-10 pr-3 py-2 border border-[var(--color-very-light-blue)] rounded-md leading-5 bg-white placeholder-[var(--color-medium-blue)] focus:outline-none focus:ring-2 focus:ring-[var(--color-light-blue)]" placeholder="Enter your location" required>
                     </div>
                     @error('location')
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -74,7 +78,7 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="ri-smartphone-line text-[var(--color-medium-blue)]"></i>
                         </div>
-                        <input type="tel" name="phone" id="phone" value="{{ old('phone') }}" class="block w-full pl-10 pr-3 py-2 border border-[var(--color-very-light-blue)] rounded-md leading-5 bg-white placeholder-[var(--color-medium-blue)] focus:outline-none focus:ring-2 focus:ring-[var(--color-light-blue)] focus:border-[var(--color-light-blue)] sm:text-sm" placeholder="Enter your phone number" required>
+                        <input type="tel" name="phone" id="phone" value="{{ old('phone') }}" class="block w-full pl-10 pr-3 py-2 border border-[var(--color-very-light-blue)] rounded-md leading-5 bg-white placeholder-[var(--color-medium-blue)] focus:outline-none focus:ring-2 focus:ring-[var(--color-light-blue)]" placeholder="Enter your phone number" required>
                     </div>
                     @error('phone')
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -82,6 +86,7 @@
                 </div>
             </div>
 
+            <!-- Phase 3: Password -->
             <div id="phase-3" class="space-y-4 hidden">
                 <!-- Password -->
                 <div>
@@ -90,8 +95,9 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="ri-lock-2-line text-[var(--color-medium-blue)]"></i>
                         </div>
-                        <input type="password" name="password" id="password" class="block w-full pl-10 pr-3 py-2 border border-[var(--color-very-light-blue)] rounded-md leading-5 bg-white placeholder-[var(--color-medium-blue)] focus:outline-none focus:ring-2 focus:ring-[var(--color-light-blue)] focus:border-[var(--color-light-blue)] sm:text-sm" placeholder="Create a password" required>
+                        <input type="password" name="password" id="password" class="block w-full pl-10 pr-3 py-2 border border-[var(--color-very-light-blue)] rounded-md leading-5 bg-white placeholder-[var(--color-medium-blue)] focus:outline-none focus:ring-2 focus:ring-[var(--color-light-blue)]" placeholder="Create a password" required>
                     </div>
+                    <p class="mt-1 text-xs text-gray-500">Password must be at least 6 characters long.</p>
                     @error('password')
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -104,7 +110,7 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="ri-lock-2-line text-[var(--color-medium-blue)]"></i>
                         </div>
-                        <input type="password" name="password_confirmation" id="password_confirmation" class="block w-full pl-10 pr-3 py-2 border border-[var(--color-very-light-blue)] rounded-md leading-5 bg-white placeholder-[var(--color-medium-blue)] focus:outline-none focus:ring-2 focus:ring-[var(--color-light-blue)] focus:border-[var(--color-light-blue)] sm:text-sm" placeholder="Confirm your password">
+                        <input type="password" name="password_confirmation" id="password_confirmation" class="block w-full pl-10 pr-3 py-2 border border-[var(--color-very-light-blue)] rounded-md leading-5 bg-white placeholder-[var(--color-medium-blue)] focus:outline-none focus:ring-2 focus:ring-[var(--color-light-blue)]" placeholder="Confirm your password">
                     </div>
                     @error('password_confirmation')
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -114,21 +120,19 @@
 
             <!-- Navigation Buttons -->
             <div class="flex justify-between pt-4">
-                <button type="button" id="prev-btn" class="hidden inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-[var(--color-dark-blue)] bg-[var(--color-pale-blue)] hover:bg-[var(--color-very-light-blue)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-light-blue)]">
+                <button type="button" id="prev-btn" class="hidden inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-[var(--color-dark-blue)] bg-[var(--color-pale-blue)] hover:bg-[var(--color-very-light-blue)]">
                     Previous
                 </button>
-                <button type="button" id="next-btn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--color-medium-blue)] hover:bg-[var(--color-dark-blue)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-light-blue)]">
+                <button type="button" id="next-btn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--color-medium-blue)] hover:bg-[var(--color-dark-blue)]">
                     Next
                 </button>
-                <button type="submit" id="submit-btn" class="hidden inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--color-medium-blue)] hover:bg-[var(--color-dark-blue)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-light-blue)]">
+                <button type="submit" id="submit-btn" class="hidden inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--color-medium-blue)] hover:bg-[var(--color-dark-blue)]">
                     Register
                 </button>
             </div>
         </form>
     </div>
 </div>
-
-
 
 <script>
    document.addEventListener('DOMContentLoaded', function() {
@@ -198,6 +202,5 @@
 
     showPhase(1);
 });
-
 </script>
 @endsection

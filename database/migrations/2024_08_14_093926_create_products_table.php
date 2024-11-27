@@ -26,8 +26,8 @@ return new class extends Migration
         DB::table('products')->insert([
             [
                 'product_Name' => 'Container',
-                'description' => 'Malaki 5L',
-                'price' => '30', // Add a valid location
+                'description' => '4L',
+                'price' => '25', // Add a valid location
                 'stock' => '100',
                 'availableCon' => '100',
                 'image_url' => 'container',
@@ -37,13 +37,12 @@ return new class extends Migration
         ]);
         DB::table('products')->insert([
             [
-                'product_Name' => 'Galoon',
-                'description' => 'Malaki 10L',
-                'price' => '50', // Add a valid location
+                'product_Name' => 'Gallon',
+                'description' => '4L',
+                'price' => '25', // Add a valid location
                 'stock' => '100',
                 'availableCon' => '100',
                 'image_url' => 'galoon',
-                'created_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -51,12 +50,11 @@ return new class extends Migration
         DB::table('products')->insert([
             [
                 'product_Name' => 'Water Bottle',
-                'description' => 'Maliit',
+                'description' => '400ml',
                 'price' => '10',
                 'stock' => '100',
                 'availableCon' => '100',
                 'image_url' => 'bottle',
-                'created_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

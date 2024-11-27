@@ -18,7 +18,7 @@ class UserController extends Controller
             'username' => ['required', 'max:50'],
             'email' => ['required', 'max:50', 'email', 'unique:users,email'],
             'location' => ['required', 'max:50'],
-            'phone' => ['required', 'min:11'],
+            'phone' => ['required', 'min:11', 'max:11'],
             'password' => ['required', 'min:6', 'confirmed']
         ]);
 
@@ -27,10 +27,12 @@ class UserController extends Controller
 
       // papaayos mo ito sa chat gpt
 
-        //redirect
-        return redirect()->route('login')->with('success', 'Registration successful!');
+       // Redirect to a success page
+    return redirect()->route('register.success');
+    }
 
-
+    function registerSuccess() {
+        return view('auth.registerSuccess');
     }
 
     public function login(Request $request)

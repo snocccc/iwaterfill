@@ -12,7 +12,7 @@
             </div>
 
             <!-- Form Section -->
-            <form action="{{ route('profile.edit', $user->id) }}" method="POST" class="p-8">
+            <form action="{{ route('profile.update') }}" method="POST" class="p-8">
                 @csrf
                 <div class="space-y-6">
                     <!-- Username Field -->

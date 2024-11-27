@@ -132,8 +132,10 @@ public function adminUpdatepass(Request $request)
 {
     $request->validate([
         'current_password' => 'required',
-        'new_password' => 'required|confirmed',
-    ]);
+        'new_password' => ['required', 'string', 'min:6'],
+], [
+    'new_password.min' => 'The password must be at least 6 characters.',
+]);
 
     $user = Auth::user();
 

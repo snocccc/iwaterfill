@@ -17,7 +17,6 @@
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -27,14 +26,6 @@
                             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">{{ $user->email }}</td>
                             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">{{ $user->location }}</td>
                             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">{{ $user->phone }}</td>
-                            <td class="px-4 py-2 whitespace-nowrap text-sm font-medium">
-                                <button class="text-[#0077b6] hover:text-[#00b4d8] mr-3 transition duration-300">
-                                    <i class="ri-edit-line"></i> Edit
-                                </button>
-                                <button class="text-red-600 hover:text-red-800 transition duration-300">
-                                    <i class="ri-delete-bin-line"></i> Delete
-                                </button>
-                            </td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -72,22 +63,6 @@
                     </div>
                 </div>
                 @endforeach
-            </div>
-
-            <div class="mt-4 flex justify-center">
-                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                        <span class="sr-only">Previous</span>
-                        <i class="ri-arrow-left-s-line"></i>
-                    </a>
-                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">1</a>
-                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">2</a>
-                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">3</a>
-                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                        <span class="sr-only">Next</span>
-                        <i class="ri-arrow-right-s-line"></i>
-                    </a>
-                </nav>
             </div>
         </div>
     </div>

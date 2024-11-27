@@ -18,6 +18,7 @@ Route::middleware('guest')->group(function() {
     // Registration
     Route::view('/register', 'auth.register')->name('register');
     Route::post('/register', [UserController::class, 'register']);
+    Route::get('/account/created', [UserController::class, 'registerSuccess'])->name('register.success');
     Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
     Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email');
     Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset');
@@ -71,9 +72,6 @@ Route::middleware('auth')->group(function() {
        Route::post('/update-products', [ProductController::class, 'updateProducts'])->name('updateProducts');
        // Payment History and Editing
        Route::get('/history', [DashController::class, 'adminHistory'])->name('history');
-       Route::get('/payments/{id}/edit', [PaymentController::class, 'edit'])->name('payments.edit');
-       Route::put('/payments/{id}', [PaymentController::class, 'update'])->name('payments.update');
-       Route::delete('/payments/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
        // Containers Management
        Route::get('/container', [ProductController::class, 'showContainers'])->name('container');
        // Route para sa pag-edit ng stock ng produkto

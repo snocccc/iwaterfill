@@ -27,12 +27,13 @@ class DashController extends Controller
 
     public function customerList()
     {
-        // Retrieve all users from the database
-        $users = User::all();
+        // Retrieve paginated users from the database
+        $users = User::paginate(10); // 10 users per page
 
         // Pass the users to the view
         return view('adminDash.customerList', ['users' => $users]);
     }
+
 
 
     // Method para mag-update ng expense
@@ -40,13 +41,11 @@ public function updateExpense(Request $request)
 {
     $request->validate([
         'amount' => 'required|numeric|min:0',
-        'description' => 'required|string|max:255',
     ]);
 
     // Insert a new expense record sa database
     Expense::create([
         'period_type' => 'monthly', // Maaari mong baguhin ito depende sa kailangan mo (e.g., 'daily', 'weekly', 'monthly')
-        'description' => $request->input('description'),
         'amount' => $request->input('amount'),
         'start_date' => Carbon::today()->toDateString(),
         'end_date' => Carbon::today()->toDateString(),
@@ -240,7 +239,7 @@ private function mergeDuplicateExpenses()
         // Set the default period to 'monthly'
         $period = $request->input('period', 'monthly');
 
-        // Kunin ang historical sales data mula sa Historical table
+        // Kunin ang actual sales data
         $actualSales = Historical::where('period_type', 'monthly')
             ->orderBy('start_date', 'asc')
             ->get(['start_date', 'total_sales'])
@@ -251,66 +250,60 @@ private function mergeDuplicateExpenses()
                 ];
             });
 
-        // Kunin ang predicted sales gamit ang private function
-$predictedSalesData = $this->getMonthlySalesDataForPrediction();
+        // Kunin ang predicted sales
+        $predictedSalesData = $this->getMonthlySalesDataForPrediction();
+        $predictedSales = [];
+        $startMonth = \Carbon\Carbon::now()->startOfMonth();
+        if (!empty($predictedSalesData) && is_array($predictedSalesData)) {
+            for ($i = 0; $i < count($predictedSalesData); $i++) {
+                $predictedSales[] = [
+                    'month' => $startMonth->addMonth()->format('Y-m'),
+                    'sales' => isset($predictedSalesData[$i]) ? $predictedSalesData[$i] : 0
+                ];
+            }
+        } else {
+            for ($i = 0; $i < 12; $i++) {
+                $predictedSales[] = [
+                    'month' => $startMonth->addMonth()->format('Y-m'),
+                    'sales' => 0
+                ];
+            }
+        }
 
-// Pag-format ng predicted sales data
-$predictedSales = [];
-$startMonth = \Carbon\Carbon::now()->startOfMonth();
+        // Kunin ang monthly expenses mula sa `expense_sums`
+        $monthlyExpenses = Expense_sums::where('period_type', 'monthly')
+            ->orderBy('start_date', 'asc')
+            ->get(['start_date', 'amount'])
+            ->map(function ($data) {
+                return [
+                    'month' => \Carbon\Carbon::parse($data->start_date)->format('Y-F'),
+                    'amount' => (float) $data->amount
+                ];
+            });
 
-// Mag-check muna kung may laman ang $predictedSalesData
-if (!empty($predictedSalesData) && is_array($predictedSalesData)) {
-    for ($i = 0; $i < count($predictedSalesData); $i++) {
-        $predictedSales[] = [
-            'month' => $startMonth->addMonth()->format('Y-m'),
-            'sales' => isset($predictedSalesData[$i]) ? $predictedSalesData[$i] : 0 // Default sa 0 kung wala
-        ];
-    }
-} else {
-    // Kapag walang laman, lagyan ng default na mensahe o 0 data
-    for ($i = 0; $i < 12; $i++) {
-        $predictedSales[] = [
-            'month' => $startMonth->addMonth()->format('Y-m'),
-            'sales' => 0 // Default value kapag walang data
-        ];
-    }
-}
-
-
- // Get all orders where the status is 0 (pending orders)
- $pendingOrders = Order::where('status', 0)->count();
-        // Ihanda ang iba pang data para sa view
+        // Iba pang data
+        $pendingOrders = Order::where('status', 0)->count();
         $products = Product::all();
         $stocks = $products->pluck('stock', 'product_Name');
-
-         // Kunin ang kabuuang halaga ng expenses ngayon
-         $totalExpensesToday = Expense::whereDate('created_at', Carbon::today())->sum('amount');
-         $totalExpenses = Expense::sum('amount');
-         $totalExpenses = Expense_sums::where('period_type', 'monthly')->avg('amount');
-
+        $totalExpensesToday = Expense::whereDate('created_at', Carbon::today())->sum('amount');
+        $totalExpenses = Expense::sum('amount');
+        $totalExpenses = Expense_sums::where('period_type', 'monthly')->avg('amount');
         $this->recordDailySales();
-         // Tawagin ang computeProfit function para makuha ang profit
-         $profit = $this->computeProfit();
-
+        $profit = $this->computeProfit();
         $totalSalesToday = Payment::whereDate('purchase_date', Carbon::today())->sum('price');
         $totalSales = Payment::sum('price');
-
-        $averageDailySales = Historical::where('period_type', 'daily')->avg('total_sales');
         $averageMonthlySales = Historical::where('period_type', 'monthly')->avg('total_sales');
-
-        // Check kung may laman ang data
         $hasData = !$actualSales->isEmpty() || !empty($predictedSalesData);
 
         $customerLocations = User::select('location', DB::raw('count(*) as count'))
-    ->where('role', 'user') // I-filter ang mga may role na 'user' lamang
-    ->groupBy('location')
-    ->orderByDesc('count')
-    ->get();
-
-         // I-format ang data para sa chart
+            ->where('role', 'user')
+            ->groupBy('location')
+            ->orderByDesc('count')
+            ->get();
         $locationLabels = $customerLocations->pluck('location');
         $locationCounts = $customerLocations->pluck('count');
 
+        // Return sa view ang data
         return view('adminDash.dashboard', compact(
             'stocks',
             'totalSalesToday',
@@ -320,13 +313,13 @@ if (!empty($predictedSalesData) && is_array($predictedSalesData)) {
             'pendingOrders',
             'totalExpensesToday',
             'totalExpenses',
-            'averageDailySales',
             'averageMonthlySales',
             'actualSales',
             'predictedSales',
             'hasData',
-            'locationLabels', // Idagdag ang labels ng location
-            'locationCounts',// Flag na magsasabi kung may data o wala
+            'locationLabels',
+            'locationCounts',
+            'monthlyExpenses' // Idagdag ang monthly expenses
         ));
     }
 

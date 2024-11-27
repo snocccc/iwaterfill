@@ -212,10 +212,6 @@ canvas#salesPredictionChart {
       </div>
     </div>
 
-    <div>
-      <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-      <textarea id="description" name="description" rows="3" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Enter expense description..."></textarea>
-    </div>
 
     <div class="flex justify-end space-x-3">
       <button type="button" onclick="closeExpensesModal()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium rounded-md">
@@ -321,27 +317,6 @@ canvas#salesPredictionChart {
 
 
 
-            <!-- Daily Average Sales -->
-            <div class="bg-white rounded-lg border border-gray-200 shadow-lg">
-              <div class="p-5">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center space-x-3">
-                    <div class="p-3 bg-yellow-100 rounded-lg">
-                      <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                      </svg>
-                    </div>
-                    <h3 class="text-lg font-medium text-gray-900">Daily Average Income</h3>
-                  </div>
-                </div>
-                <div class="mt-4 flex items-center space-x-2">
-                  <p class="text-3xl font-bold text-gray-900">₱{{ number_format($averageDailySales, 2) }}</p>
-                  <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
 
 
             <!-- Monthly Average Sales -->
@@ -437,7 +412,30 @@ canvas#salesPredictionChart {
             </div>
         </div>
     </div>
+    <div class="bg-white rounded-lg border border-gray-200 shadow-lg overflow-hidden">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-red-100 rounded-lg">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Monthly Expenses Breakdown</h2>
+                        <p class="text-sm text-gray-500">Detailed expense tracking and analysis</p>
+                    </div>
+                </div>
+            </div>
+            <div class="h-96 sm:h-[400px]">
+                <canvas id="expensesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
 </div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
 <script>
@@ -552,6 +550,43 @@ const locationChart = new Chart(locationCtx, {
         }
     }
 });
+document.addEventListener("DOMContentLoaded", function () {
+    const ctx = document.getElementById('expensesChart').getContext('2d');
+
+    const monthlyExpenses = @json($monthlyExpenses);
+    const labels = monthlyExpenses.map(item => item.month);
+    const data = monthlyExpenses.map(item => parseFloat(item.amount));
+
+    new Chart(ctx, {
+        type: 'line', // Baguhin ang type sa 'line'
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Monthly Expenses',
+                data: data,
+                fill: false, // Walang fill sa ilalim ng linya
+                borderColor: 'rgba(54, 162, 235, 1)', // Kulay ng linya
+                borderWidth: 2, // Lapad ng linya
+                tension: 0.4 // Smoothing ng line graph
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true // Siguraduhing magsimula sa 0
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            }
+        }
+    });
+});
 
 
 let totalExpenses = 0;
@@ -591,5 +626,6 @@ window.onclick = function(event) {
     closeExpensesModal();
   }
 }
+
 </script>
 @endsection
