@@ -401,7 +401,7 @@ canvas#salesPredictionChart {
         </div>
 
       <!-- Wrap both charts in a grid container -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto p-6">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-7xl mx-auto p-6">
     <!-- Sales Chart -->
     <div class="bg-white rounded-lg border border-gray-200 shadow-lg overflow-hidden">
         <div class="p-6">
@@ -420,6 +420,47 @@ canvas#salesPredictionChart {
             </div>
             <div class="h-96 sm:h-[400px]">
                 <canvas id="salesPredictionChart" style="display: {{ $hasData ? 'block' : 'none' }}"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg border border-gray-200 shadow-lg overflow-hidden">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-green-100 rounded-lg">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h11m4 0h1M5 21V10M16 21v-8M10 10h4m-4 11h4M3 5h18m-2 6v6m0 0V5a2 2 0 00-2-2H5a2 2 0 00-2 2v6m18 0h-1"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Stock Predictions Overview</h2>
+                        <p class="text-sm text-gray-500">Monthly stock predictions for your products</p>
+                    </div>
+                </div>
+            </div>
+            <div class="h-96 sm:h-[400px]">
+                <canvas id="stockPredictionChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="bg-white rounded-lg border border-gray-200 shadow-lg overflow-hidden">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-red-100 rounded-lg">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">Monthly Expenses Breakdown</h2>
+                        <p class="text-sm text-gray-500">Detailed expense tracking and analysis</p>
+                    </div>
+                </div>
+            </div>
+            <div class="h-96 sm:h-[400px]">
+                <canvas id="expensesChart"></canvas>
             </div>
         </div>
     </div>
@@ -446,26 +487,7 @@ canvas#salesPredictionChart {
             </div>
         </div>
     </div>
-    <div class="bg-white rounded-lg border border-gray-200 shadow-lg overflow-hidden">
-        <div class="p-6">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center space-x-3">
-                    <div class="p-2 bg-red-100 rounded-lg">
-                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-900">Monthly Expenses Breakdown</h2>
-                        <p class="text-sm text-gray-500">Detailed expense tracking and analysis</p>
-                    </div>
-                </div>
-            </div>
-            <div class="h-96 sm:h-[400px]">
-                <canvas id="expensesChart"></canvas>
-            </div>
-        </div>
-    </div>
+
 
 </div>
 
@@ -584,6 +606,75 @@ const locationChart = new Chart(locationCtx, {
         }
     }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+        // Pasa ang data mula sa Laravel controller papunta sa JavaScript
+        const stockPredictionData = @json($predictedStocks);
+
+        // Maghanda ng labels (mga buwan) at data para sa mga produkto
+        const labels = [];
+        const productData = {};  // Dynamic storage for products
+
+        // I-organize ang data
+        stockPredictionData.forEach(item => {
+            if (!labels.includes(item.month)) {
+                labels.push(item.month); // Idagdag ang unique na buwan
+            }
+
+            // Kung wala pang entry para sa product, mag-create ng bagong array
+            if (!productData[item.product]) {
+                productData[item.product] = [];
+            }
+
+            // Itala ang predicted quantity para sa bawat produkto at buwan
+            productData[item.product].push(item.predicted_quantity);
+        });
+
+        const ctx = document.getElementById('stockPredictionChart').getContext('2d');
+
+        // Gumawa ng datasets para sa bawat produkto
+        const datasets = Object.keys(productData).map((productName, index) => ({
+            label: productName,
+            data: productData[productName],
+            borderColor: `rgba(${(index + 1) * 50}, ${(index + 1) * 100}, ${(index + 1) * 150}, 1)`,
+            backgroundColor: `rgba(${(index + 1) * 50}, ${(index + 1) * 100}, ${(index + 1) * 150}, 0.2)`,
+            fill: false,
+            tension: 0.4,
+            pointRadius: 5,
+        }));
+
+        // Gumawa ng chart
+        const stockPredictionChart = new Chart(ctx, {
+            type: 'line', // Line chart
+            data: {
+                labels: labels, // Buwan bilang labels ng X-axis
+                datasets: datasets // Dynamic datasets para sa bawat produkto
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                    },
+                    y: {
+                        beginAtZero: true,
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return 'Predicted Quantity: ' + tooltipItem.raw;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+
+
 document.addEventListener("DOMContentLoaded", function () {
     const ctx = document.getElementById('expensesChart').getContext('2d');
 

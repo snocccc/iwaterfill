@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Payment;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -26,13 +27,14 @@ class DashController extends Controller
     }
 
     public function customerList()
-    {
-        // Retrieve paginated users from the database
-        $users = User::paginate(10); // 10 users per page
+{
+    // Retrieve paginated users with 'user' role from the database
+    $users = User::where('role', 'user')->paginate(10); // 10 users per page
 
-        // Pass the users to the view
-        return view('adminDash.customerList', ['users' => $users]);
-    }
+    // Pass the users to the view
+    return view('adminDash.customerList', ['users' => $users]);
+}
+
 
 
 
@@ -251,24 +253,58 @@ private function mergeDuplicateExpenses()
             });
 
         // Kunin ang predicted sales
-        $predictedSalesData = $this->getMonthlySalesDataForPrediction();
-        $predictedSales = [];
-        $startMonth = \Carbon\Carbon::now()->startOfMonth();
-        if (!empty($predictedSalesData) && is_array($predictedSalesData)) {
-            for ($i = 0; $i < count($predictedSalesData); $i++) {
-                $predictedSales[] = [
-                    'month' => $startMonth->addMonth()->format('Y-m'),
-                    'sales' => isset($predictedSalesData[$i]) ? $predictedSalesData[$i] : 0
+            $predictedSalesData = $this->getMonthlySalesDataForPrediction();
+            $predictedSales = [];
+            $startMonth = \Carbon\Carbon::now()->startOfMonth();
+            if (!empty($predictedSalesData) && is_array($predictedSalesData)) {
+                for ($i = 0; $i < count($predictedSalesData); $i++) {
+                    $predictedSales[] = [
+                        'month' => $startMonth->addMonth()->format('Y-m'),
+                        'sales' => isset($predictedSalesData[$i]) ? $predictedSalesData[$i] : 0
+                    ];
+                }
+            } else {
+                for ($i = 0; $i < 12; $i++) {
+                    $predictedSales[] = [
+                        'month' => $startMonth->addMonth()->format('Y-m'),
+                        'sales' => 0
+                    ];
+                }
+            }
+
+            $predictedStockData = $this->getMonthlyStockDataForPrediction();
+            $predictedStocks = [];
+
+            if (!empty($predictedStockData)) {
+                foreach ($predictedStockData as $productName => $stockPredictions) {
+                    if (isset($stockPredictions['error'])) {
+                        $predictedStocks[] = [
+                            'product' => $productName,
+                            'error' => $stockPredictions['error'],
+                        ];
+                    } else {
+                        foreach ($stockPredictions as $prediction) {
+                            // Convert the month number to a month name (e.g., 'January', 'February', etc.)
+                            $monthName = \Carbon\Carbon::parse($prediction['month'])->format('F-Y'); // 'F' gives full month name
+                            $predictedStocks[] = [
+                                'product' => $productName,
+                                'month' => $monthName, // Use month name here
+                                'predicted_quantity' => $prediction['predicted_quantity']
+                            ];
+                        }
+                    }
+                }
+            } else {
+                $predictedStocks[] = [
+                    'product' => 'No data available',
+                    'month' => now()->format('F-Y'), // Display the current month name
+                    'predicted_quantity' => 0
                 ];
             }
-        } else {
-            for ($i = 0; $i < 12; $i++) {
-                $predictedSales[] = [
-                    'month' => $startMonth->addMonth()->format('Y-m'),
-                    'sales' => 0
-                ];
-            }
-        }
+
+
+
+
 
         // Kunin ang monthly expenses mula sa `expense_sums`
         $monthlyExpenses = Expense_sums::where('period_type', 'monthly')
@@ -289,6 +325,7 @@ private function mergeDuplicateExpenses()
         $totalExpenses = Expense::sum('amount');
         $totalExpenses = Expense_sums::where('period_type', 'monthly')->avg('amount');
         $this->recordDailySales();
+        $this->recordProductStocks();
         $profit = $this->computeProfit();
         $totalSalesToday = Payment::whereDate('purchase_date', Carbon::today())->sum('price');
         $totalSales = Payment::sum('price');
@@ -321,7 +358,8 @@ private function mergeDuplicateExpenses()
             'locationLabels',
             'locationCounts',
             'monthlyExpenses',
-            'cancelledOrders'
+            'cancelledOrders',
+            'predictedStocks'
         ));
     }
 
@@ -370,6 +408,66 @@ private function mergeDuplicateExpenses()
         });
     }
 }
+
+private function recordProductStocks()
+{
+    $products = ['Container', 'Gallon', 'Water Bottle']; // Listahan ng mga produkto
+    $yesterday = now()->subDay()->toDateString();
+
+    foreach ($products as $product) {
+        $existingHistorical = Stock::whereDate('start_date', $yesterday)
+            ->where('period_type', 'daily')
+            ->where('product_name', $product)
+            ->first();
+
+        if (!$existingHistorical) {
+            // Calculate total stocks for the product as of yesterday
+            $yesterdayStocks = Payment::where('product_Name', $product)->sum('quantity');
+
+            // Insert a new record in the stocks table for daily records 
+            Stock::create([
+                'period_type'   => 'daily',
+                'product_name'  => $product,
+                'quantity'      => $yesterdayStocks,
+                'start_date'    => $yesterday,
+                'end_date'      => $yesterday,
+                'is_processed'  => false,
+            ]);
+        }
+
+        // Get the first 30 unprocessed daily records for the product
+        $dailyStockRecords = Stock::where('period_type', 'daily')
+            ->where('product_name', $product)
+            ->where('is_processed', false)
+            ->orderBy('start_date', 'asc')
+            ->take(30)
+            ->get();
+
+        // Check if we have exactly 30 records for processing
+        if ($dailyStockRecords->count() == 30) {
+            $monthlyStockTotal = $dailyStockRecords->sum('quantity');
+            $monthStartDate = $dailyStockRecords->first()->start_date;
+            $monthEndDate = $dailyStockRecords->last()->start_date;
+
+            // Create a new monthly record
+            Stock::create([
+                'period_type'   => 'monthly',
+                'product_name'  => $product,
+                'quantity'      => $monthlyStockTotal,
+                'start_date'    => $monthStartDate,
+                'end_date'      => $monthEndDate,
+                'is_processed'  => false, // Default to false for monthly
+            ]);
+
+            // Mark these daily records as processed
+            $dailyStockRecords->each(function ($record) {
+                $record->update(['is_processed' => true]);
+            });
+        }
+    }
+}
+
+
 
 
 public function adminHistory(Request $request)
@@ -461,6 +559,65 @@ public function adminHistory(Request $request)
 
         return $predictedData;
     }
+    private function getMonthlyStockDataForPrediction()
+    {
+        // Kunin ang historical stock data mula sa Stocks table
+        $stockData = Stock::where('period_type', 'monthly')
+            ->orderBy('start_date', 'asc')
+            ->distinct('start_date')
+            ->get(['start_date', 'quantity', 'product_name']);
+
+        // I-prepare ang data para sa machine learning
+        $samples = [];
+        $targets = [];
+        $productNames = [];
+
+        foreach ($stockData as $data) {
+            $month = \Carbon\Carbon::parse($data->start_date)->month;
+            $year = \Carbon\Carbon::parse($data->start_date)->year;
+
+            $samples[] = [$year * 12 + $month]; // Convert year + month to a single value
+            $targets[] = (float) $data->quantity;
+            $productNames[$data->product_name][] = [$year * 12 + $month, (float) $data->quantity];
+        }
+
+        // Kung walang stock data, ibalik ang empty array na may error na string sa loob
+        if (empty($samples)) {
+            return []; // Return empty array, not string
+        }
+
+        // I-train ang linear regression model para sa bawat produkto
+        $predictedStocks = [];
+        foreach ($productNames as $productName => $data) {
+            $samples = array_column($data, 0);
+            $targets = array_column($data, 1);
+
+            try {
+                $regressor = new LeastSquares();
+                $regressor->train(array_map(fn($s) => [$s], $samples), $targets);
+
+                // Pag-predict ng stocks para sa susunod na limang buwan
+                $currentMonth = (\Carbon\Carbon::now()->year * 12) + \Carbon\Carbon::now()->month;
+                $productPredictions = [];
+                for ($i = 1; $i <= 5; $i++) {
+                    $predictedQuantity = max(0, $regressor->predict([$currentMonth + $i]));
+                    $productPredictions[] = [
+                        'month' => \Carbon\Carbon::now()->addMonths($i)->format('Y-m'),
+                        'predicted_quantity' => round($predictedQuantity, 2),
+                    ];
+                }
+
+                $predictedStocks[$productName] = $productPredictions;
+            } catch (\Exception $e) {
+                // Kung may error sa training, mag-return ng error message
+                $predictedStocks[$productName] = ['error' => 'Error in training the model: ' . $e->getMessage()];
+            }
+        }
+
+        return $predictedStocks;
+    }
+
+
     /**
      * Show other methods if necessary.
      */
