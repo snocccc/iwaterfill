@@ -233,6 +233,16 @@ private function mergeDuplicateExpenses()
     }
 }
 
+private function getAverageProfit()
+{
+    // Kunin ang average ng lahat ng profit mula sa `profits` table
+    $averageProfit = DB::table('profits')
+        ->where('period_type', 'monthly') // Kung gusto mo lang i-filter sa monthly profits
+        ->avg('amount');
+
+    return $averageProfit ?: 0; // Kung walang records, ibalik ang 0 bilang default
+}
+
     /**
      * Get sales data for the chart based on the selected period.
      */
@@ -330,6 +340,7 @@ private function mergeDuplicateExpenses()
         $totalSalesToday = Payment::whereDate('purchase_date', Carbon::today())->sum('price');
         $totalSales = Payment::sum('price');
         $averageMonthlySales = Historical::where('period_type', 'monthly')->avg('total_sales');
+        $averageProfit = $this->getAverageProfit();
         $hasData = !$actualSales->isEmpty() || !empty($predictedSalesData);
         $cancelledOrders = Order::where('status', 2)->count();
 
@@ -359,7 +370,8 @@ private function mergeDuplicateExpenses()
             'locationCounts',
             'monthlyExpenses',
             'cancelledOrders',
-            'predictedStocks'
+            'predictedStocks',
+            'averageProfit'
         ));
     }
 
@@ -424,7 +436,7 @@ private function recordProductStocks()
             // Calculate total stocks for the product as of yesterday
             $yesterdayStocks = Payment::where('product_Name', $product)->sum('quantity');
 
-            // Insert a new record in the stocks table for daily records 
+            // Insert a new record in the stocks table for daily records
             Stock::create([
                 'period_type'   => 'daily',
                 'product_name'  => $product,
