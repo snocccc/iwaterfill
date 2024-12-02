@@ -38,14 +38,7 @@
                 <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
                     <div class="flex justify-between items-start mb-2">
                         <h3 class="font-medium text-gray-900">{{ $user->username }}</h3>
-                        <div class="flex space-x-2">
-                            <button class="text-[#0077b6] hover:text-[#00b4d8] transition duration-300">
-                                <i class="ri-edit-line"></i>
-                            </button>
-                            <button class="text-red-600 hover:text-red-800 transition duration-300">
-                                <i class="ri-delete-bin-line"></i>
-                            </button>
-                        </div>
+
                     </div>
                     <div class="space-y-1 text-sm">
                         <p class="flex items-center text-gray-500">
