@@ -120,13 +120,13 @@
             Welcome to Lola A's Tubigan! By using our services, you agree to the following terms and conditions:
         </p>
         <p class="text-sm text-gray-600 mb-4">
-            **Information We Collect**: We may collect information such as your name, email, contact details, and transaction history to enhance our services.
+            Information We Collect: We may collect information such as your name, email, contact details, and transaction history to enhance our services.
         </p>
         <p class="text-sm text-gray-600 mb-4">
-            **How We Use Your Information**: Your data is used for order processing, account management, and improving our services. We do not share your personal information with third parties without your consent.
+            How We Use Your Information: Your data is used for order processing, account management, and improving our services. We do not share your personal information with third parties without your consent.
         </p>
         <p class="text-sm text-gray-600 mb-4">
-            **Security**: We employ the latest security measures to protect your data from unauthorized access.
+            Security: We employ the latest security measures to protect your data from unauthorized access.
         </p>
         <p class="text-sm text-gray-600">
             By using our services, you agree to this Privacy Policy. We reserve the right to update this policy as needed.
@@ -145,16 +145,16 @@
             Lola A's Tubigan is committed to protecting your privacy. This policy explains how we collect, use, and safeguard your personal information.
         </p>
         <p class="text-sm text-gray-600 mb-4">
-            **1. Use of Service**: Our platform is provided for personal, non-commercial use. You must not misuse the services or violate applicable laws.
+            1. Use of Service: Our platform is provided for personal, non-commercial use. You must not misuse the services or violate applicable laws.
         </p>
         <p class="text-sm text-gray-600 mb-4">
-            **2. Account Responsibilities**: You are responsible for maintaining the confidentiality of your account credentials and for all activities under your account.
+            2. Account Responsibilities: You are responsible for maintaining the confidentiality of your account credentials and for all activities under your account.
         </p>
         <p class="text-sm text-gray-600 mb-4">
-            **3. Orders and Payments**: All orders are subject to availability. Prices are displayed at the time of checkout and must be paid in full.
+            3. Orders and Payments: All orders are subject to availability. Prices are displayed at the time of checkout and must be paid in full.
         </p>
         <p class="text-sm text-gray-600 mb-4">
-            **4. Limitations of Liability**: Lola A's Tubigan is not liable for any indirect or consequential losses resulting from the use of our services.
+            4. Limitations of Liability: Lola A's Tubigan is not liable for any indirect or consequential losses resulting from the use of our services.
         </p>
         <p class="text-sm text-gray-600">
             By continuing to use our services, you agree to these terms. We reserve the right to modify these terms at any time.
@@ -192,13 +192,13 @@
             Lola A's Tubigan is committed to protecting your privacy. This policy explains how we collect, use, and safeguard your personal information.
         </p>
         <p class="text-sm text-gray-600 mb-4">
-            **Information We Collect**: We may collect information such as your name, email, contact details, and transaction history to enhance our services.
+            Information We Collect: We may collect information such as your name, email, contact details, and transaction history to enhance our services.
         </p>
         <p class="text-sm text-gray-600 mb-4">
-            **How We Use Your Information**: Your data is used for order processing, account management, and improving our services. We do not share your personal information with third parties without your consent.
+            How We Use Your Information: Your data is used for order processing, account management, and improving our services. We do not share your personal information with third parties without your consent.
         </p>
         <p class="text-sm text-gray-600 mb-4">
-            **Security**: We employ the latest security measures to protect your data from unauthorized access.
+            Security: We employ the latest security measures to protect your data from unauthorized access.
         </p>
         <p class="text-sm text-gray-600">
             By using our services, you agree to this Privacy Policy. We reserve the right to update this policy as needed.
@@ -217,16 +217,16 @@
             Welcome to Lola A's Tubigan! By using our services, you agree to the following terms and conditions:
         </p>
         <p class="text-sm text-gray-600 mb-4">
-            **1. Use of Service**: Our platform is provided for personal, non-commercial use. You must not misuse the services or violate applicable laws.
+            1. Use of Service: Our platform is provided for personal, non-commercial use. You must not misuse the services or violate applicable laws.
         </p>
         <p class="text-sm text-gray-600 mb-4">
-            **2. Account Responsibilities**: You are responsible for maintaining the confidentiality of your account credentials and for all activities under your account.
+            2. Account Responsibilities: You are responsible for maintaining the confidentiality of your account credentials and for all activities under your account.
         </p>
         <p class="text-sm text-gray-600 mb-4">
-            **3. Orders and Payments**: All orders are subject to availability. Prices are displayed at the time of checkout and must be paid in full.
+            3. Orders and Payments: All orders are subject to availability. Prices are displayed at the time of checkout and must be paid in full.
         </p>
         <p class="text-sm text-gray-600 mb-4">
-            **4. Limitations of Liability**: Lola A's Tubigan is not liable for any indirect or consequential losses resulting from the use of our services.
+            4. Limitations of Liability: Lola A's Tubigan is not liable for any indirect or consequential losses resulting from the use of our services.
         </p>
         <p class="text-sm text-gray-600">
             By continuing to use our services, you agree to these terms. We reserve the right to modify these terms at any time.
